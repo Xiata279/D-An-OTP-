@@ -1,18 +1,9 @@
 let isRunning = false;
 let logInterval = null;
 
-// Sound Effects
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playBeep(freq = 600, type = 'sine', duration = 0.1) {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = type;
-    osc.frequency.value = freq;
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
-    osc.stop(audioCtx.currentTime + duration);
+// Sound Effects Removed by User Request
+function playBeep() {
+    // Disabled
 }
 
 // AI Voice Removed by User Request
