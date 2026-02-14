@@ -239,7 +239,7 @@ async function pollStatus() {
             document.getElementById('btnStop').disabled = true;
             appendLog("SYNC: SERVER HALTED ATTACK", 'warning');
             stopRealPolling();
-            speak("Server interrupted.");
+            speak("Máy chủ đã ngắt kết nối.");
         }
 
     } catch (error) {
