@@ -21,9 +21,7 @@ USER_AGENTS = [
 
 # Fix encoding
 # Fix encoding for Windows
-if sys.platform.startswith('win'):
-    if hasattr(sys.stdout, 'reconfigure'):
-        sys.stdout.reconfigure(encoding='utf-8')
+# Encoding handling moved to run.bat via PYTHONIOENCODING
 
 class SpamOTP:
     def __init__(self, phone, proxies=None):
