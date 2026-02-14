@@ -34,12 +34,17 @@ function speak(text) {
             return;
         }
 
-        // Priority List: Google -> Microsoft -> Nam Minh -> Linh -> Generic
+        // Priority List: Female Vietnamese Voices
+        // 1. Google tiếng Việt (Female by default)
+        // 2. Microsoft HoaiMy (Female)
+        // 3. Apple Linh (Female)
+        // 4. Any Vietnamese voice marked as "Female"
+
         const viVoice = voices.find(v => v.name.includes('Google tiếng Việt')) ||
             voices.find(v => v.name.includes('HoaiMy')) ||
-            voices.find(v => v.name.includes('Nam Minh')) ||
             voices.find(v => v.name.includes('Linh')) ||
-            voices.find(v => v.lang === 'vi-VN');
+            voices.find(v => v.lang === 'vi-VN' && v.name.includes('Female')) ||
+            voices.find(v => v.lang === 'vi-VN'); // Fallback
 
         if (viVoice) {
             utterance.voice = viVoice;
