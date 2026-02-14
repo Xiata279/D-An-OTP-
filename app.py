@@ -8,9 +8,9 @@ app = Flask(__name__)
 
 # Global variables
 SPAM_RUNNING = False
-SPAM_THREAD = None
-LOG_MESSAGES = []  # List to store recent logs
-MAX_LOGS = 50     # Keep only last 50 logs
+SPAM_THREADS = []  # Changed to list for multiple threads
+LOG_MESSAGES = []  
+MAX_LOGS = 50     
 STATS = {
     "sent": 0,
     "success": 0,
@@ -25,9 +25,9 @@ def add_log(message, type="system"):
     if len(LOG_MESSAGES) > MAX_LOGS:
         LOG_MESSAGES.pop(0)
 
-def spam_loop_task(phone, delay):
+def spam_loop_task(phone, delay, proxies):
     global SPAM_RUNNING, STATS
-    spam_instance = spam_otp.SpamOTP(phone)
+    spam_instance = spam_otp.SpamOTP(phone, proxies=proxies)
     
     # Custom logger to capture logs and stats
     def custom_log(msg):
@@ -45,36 +45,24 @@ def spam_loop_task(phone, delay):
     
     spam_instance.log = custom_log # Override log method
     
-    STATS["threads"] = 1 # Mark as active
-    
     while SPAM_RUNNING:
         try:
             spam_instance.run_batch(delay=delay)
             time.sleep(delay)
         except Exception as e:
-            add_log(f"Critical Loop Error: {e}", "error")
+            add_log(f"Thread Error: {e}", "error")
             break
-            
-    STATS["threads"] = 0 # Mark as inactive
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/api/status', methods=['GET'])
-def get_status():
-    return jsonify({
-        "running": SPAM_RUNNING,
-        "stats": STATS,
-        "logs": LOG_MESSAGES
-    })
+# ... (Routes)
 
 @app.route('/api/start', methods=['POST'])
 def start_spam():
-    global SPAM_RUNNING, SPAM_THREAD, STATS, LOG_MESSAGES
+    global SPAM_RUNNING, SPAM_THREADS, STATS, LOG_MESSAGES
     data = request.json
     phone = data.get('phone')
     delay = float(data.get('delay', 2.0))
+    thread_count = int(data.get('threads', 1))
+    proxies_raw = data.get('proxies', '')
     
     if not phone or len(phone) < 10:
         return jsonify({'status': 'error', 'message': 'Số điện thoại không hợp lệ'}), 400
@@ -82,17 +70,23 @@ def start_spam():
     if SPAM_RUNNING:
         return jsonify({'status': 'error', 'message': 'Đang chạy spam rồi!'}), 400
 
+    # Parse Proxies
+    proxies = [p.strip() for p in proxies_raw.split('\n') if p.strip()] if proxies_raw else []
+
     # Reset stats on new run
-    STATS = {"sent": 0, "success": 0, "fail": 0, "threads": 0}
-    # LOG_MESSAGES = [] # Optional: Clear logs on start
+    STATS = {"sent": 0, "success": 0, "fail": 0, "threads": thread_count}
 
     SPAM_RUNNING = True
-    SPAM_THREAD = threading.Thread(target=spam_loop_task, args=(phone, delay))
-    SPAM_THREAD.daemon = True
-    SPAM_THREAD.start()
+    SPAM_THREADS = []
     
-    add_log(f"Started attack on {phone} with delay {delay}s", "system")
-    return jsonify({'status': 'success', 'message': f'Đã bắt đầu spam sđt: {phone}'})
+    for i in range(thread_count):
+        t = threading.Thread(target=spam_loop_task, args=(phone, delay, proxies))
+        t.daemon = True
+        t.start()
+        SPAM_THREADS.append(t)
+    
+    add_log(f"Started attack on {phone} | Threads: {thread_count} | Proxies: {len(proxies)}", "system")
+    return jsonify({'status': 'success', 'message': f'Đã kích hoạt {thread_count} luồng tấn công!'})
 
 @app.route('/api/stop', methods=['POST'])
 def stop_spam():
@@ -101,8 +95,9 @@ def stop_spam():
         return jsonify({'status': 'error', 'message': 'Không có tiến trình nào đang chạy'}), 400
     
     SPAM_RUNNING = False
-    add_log("Stopping attack...", "system")
-    return jsonify({'status': 'success', 'message': 'Đã dừng spam!'})
+    STATS["threads"] = 0
+    add_log("Stopping all threads...", "system")
+    return jsonify({'status': 'success', 'message': 'Đã dừng toàn bộ spam!'})
 
 @app.route('/api/reset_identity', methods=['POST'])
 def reset_identity():

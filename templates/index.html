@@ -65,7 +65,9 @@
                 <label>TARGET</label>
                 <div class="holo-input">
                     <i class="fa-solid fa-hashtag"></i>
-                    <input type="text" id="phoneInput" placeholder="09xxxx (10 digits)" maxlength="10">
+                    <input type="text" id="phoneInput" placeholder="09xxxx (10 digits)" maxlength="10"
+                        oninput="detectCarrier(this.value)">
+                    <span id="carrierBadge" class="carrier-badge">NET</span>
                 </div>
             </div>
 
@@ -73,6 +75,20 @@
                 <label>INTENSITY: <span id="delayValue">2.0s</span></label>
                 <input type="range" id="delaySlider" min="0" max="5" step="0.5" value="2">
                 <div class="range-bg"></div>
+            </div>
+
+            <div class="input-group">
+                <label>THREADS: <span id="threadValue">1</span></label>
+                <input type="range" id="threadSlider" min="1" max="20" step="1" value="1">
+                <div class="range-bg"></div>
+            </div>
+
+            <div class="input-group">
+                <label>PROXY MANAGER (Optional)</label>
+                <div class="holo-input textarea-box">
+                    <i class="fa-solid fa-network-wired"></i>
+                    <textarea id="proxyInput" placeholder="Enter proxies (ip:port), one per line..."></textarea>
+                </div>
             </div>
 
 

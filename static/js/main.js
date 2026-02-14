@@ -46,11 +46,45 @@ document.addEventListener('keydown', (e) => {
 // Update slider value
 const delaySlider = document.getElementById('delaySlider');
 const delayValue = document.getElementById('delayValue');
+const threadSlider = document.getElementById('threadSlider');
+const threadValue = document.getElementById('threadValue');
 
 delaySlider.addEventListener('input', (e) => {
     delayValue.textContent = `${parseFloat(e.target.value).toFixed(1)}s`;
-    playBeep(800, 'triangle', 0.05); // Tick sound
+    // playBeep(800, 'triangle', 0.05); // SFX Removed
 });
+
+threadSlider.addEventListener('input', (e) => {
+    threadValue.textContent = e.target.value;
+});
+
+// Carrier Detection
+function detectCarrier(phone) {
+    const badge = document.getElementById('carrierBadge');
+    if (phone.length < 3) {
+        badge.textContent = 'NET';
+        badge.className = 'carrier-badge';
+        return;
+    }
+
+    const p = phone.substring(0, 3);
+    let carrier = 'UNKNOWN';
+    let cls = '';
+
+    if (['086', '096', '097', '098', '032', '033', '034', '035', '036', '037', '038', '039'].includes(p)) {
+        carrier = 'VIETTEL'; cls = 'viettel';
+    } else if (['089', '090', '093', '070', '079', '077', '076', '078'].includes(p)) {
+        carrier = 'MOBI'; cls = 'mobi';
+    } else if (['088', '091', '094', '083', '084', '085', '081', '082'].includes(p)) {
+        carrier = 'VINA'; cls = 'vina';
+    } else if (['092', '056', '058'].includes(p)) {
+        carrier = 'VNMOBILE'; cls = 'vietnamobile';
+    }
+
+    badge.textContent = carrier;
+    badge.className = `carrier-badge ${cls}`;
+}
+
 
 // Helper: Append log
 function appendLog(message, type = 'system') {
@@ -68,6 +102,8 @@ async function startSpam() {
 
     const phone = document.getElementById('phoneInput').value;
     const delay = document.getElementById('delaySlider').value;
+    const threads = document.getElementById('threadSlider').value;
+    const proxies = document.getElementById('proxyInput').value;
 
     if (!phone || phone.length < 9) {
         appendLog('ERROR: INVALID TARGET NUMBER', 'error');
@@ -88,13 +124,14 @@ async function startSpam() {
         const response = await fetch('/api/start', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone, delay })
+            body: JSON.stringify({ phone, delay, threads, proxies })
         });
         const data = await response.json();
 
         if (data.status === 'success') {
             appendLog(`TARGET LOCKED: ${phone}`, 'success');
-            appendLog(`INJECTION DELAY: ${delay}s`, 'info');
+            appendLog(`CONFIG: ${threads} THREADS | ${delay}s DELAY`, 'info');
+            if (proxies.trim()) appendLog(`PROXY: ENABLED (${proxies.split('\n').length} IPs)`, 'info');
 
             // Start polling real logs
             startRealPolling();
