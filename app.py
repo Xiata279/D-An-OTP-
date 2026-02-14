@@ -55,6 +55,22 @@ def spam_loop_task(phone, delay, proxies):
 
 # ... (Routes)
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/api/status', methods=['GET'])
+def get_status():
+    return jsonify({
+        "running": SPAM_RUNNING,
+        "stats": STATS,
+        "logs": LOG_MESSAGES
+    })
+
+@app.route('/proxy-guide')
+def proxy_guide():
+    return render_template('proxy_guide.html')
+
 @app.route('/api/start', methods=['POST'])
 def start_spam():
     global SPAM_RUNNING, SPAM_THREADS, STATS, LOG_MESSAGES
