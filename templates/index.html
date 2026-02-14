@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuânEm Tool - Ultimate Spam</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="glass-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-bolt"></i>
+                <span>LuânEm</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="active"><i class="fa-solid fa-house"></i> Dashboard</a>
+            </nav>
+            <div class="user-info" style="display: none;">
+                <!-- Hidden Admin Profile -->
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h2>Dashboard</h2>
+                <div class="status-indicator">
+                    <span class="dot"></span> System Online
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Control Card -->
+                <div class="card control-card">
+                    <h3><i class="fa-solid fa-rocket"></i> Control Center</h3>
+
+                    <div class="input-group">
+                        <label>Target Phone Number (+84)</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="text" id="phoneInput" placeholder="09xxxx (10 digits)" maxlength="10">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Spam Speed (Delay: <span id="delayValue">2.0s</span>)</label>
+                        <input type="range" id="delaySlider" min="0" max="5" step="0.5" value="2">
+                        <div class="speed-labels">
+                            <span>Fast (Risk)</span>
+                            <span>Safe</span>
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <button id="btnStart" class="btn btn-primary" onclick="startSpam()">
+                            Start Attack
+                        </button>
+                        <button id="btnStop" class="btn btn-danger" onclick="stopSpam()" disabled>
+                            Stop
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Card -->
+                <div class="card stats-card">
+                    <h3><i class="fa-solid fa-chart-pie"></i> Live Statistics</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Requests Sent</span>
+                        <span class="stat-value" id="statsSent">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Success Rate</span>
+                        <span class="stat-value" id="statsSuccess">100%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Active Threads</span>
+                        <span class="stat-value" id="statsThreads">0</span>
+                    </div>
+                </div>
+
+                <!-- Log Card -->
+                <div class="card log-card">
+                    <h3><i class="fa-solid fa-terminal"></i> Live Logs</h3>
+                    <div class="log-window" id="logConsole">
+                        <div class="log-line system">[SYSTEM] Welcome to LuânEm Tool v3.0</div>
+                        <div class="log-line system">[SYSTEM] Waiting for command...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>
