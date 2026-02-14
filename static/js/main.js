@@ -18,13 +18,26 @@ function playBeep(freq = 600, type = 'sine', duration = 0.1) {
 // AI Voice
 function speak(text) {
     if ('speechSynthesis' in window) {
+        // Cancel current speech to avoid queue buildup
+        speechSynthesis.cancel();
+
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.pitch = 0.8;
-        utterance.rate = 1.1;
-        // Try to find a female voice
+        utterance.pitch = 1.0;
+        utterance.rate = 1.0;
+
+        // Try to find a Vietnamese voice
         const voices = speechSynthesis.getVoices();
-        const femaleVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Google US English'));
-        if (femaleVoice) utterance.voice = femaleVoice;
+        // Priority: Vietnamese -> Google US (Fallback) -> First available
+        const viVoice = voices.find(v => v.lang.includes('vi'));
+        const enVoice = voices.find(v => v.name.includes('Google US English'));
+
+        if (viVoice) {
+            utterance.voice = viVoice;
+            utterance.lang = 'vi-VN';
+        } else if (enVoice) {
+            utterance.voice = enVoice;
+        }
+
         speechSynthesis.speak(utterance);
     }
 }
@@ -90,7 +103,7 @@ async function startSpam() {
     if (!phone || phone.length < 9) {
         appendLog('ERROR: INVALID TARGET NUMBER', 'error');
         playBeep(200, 'sawtooth', 0.3); // Error sound
-        speak("Error. Invalid target.");
+        speak("Lỗi. Số điện thoại không hợp lệ.");
         return;
     }
 
@@ -100,7 +113,7 @@ async function startSpam() {
     isRunning = true;
 
     playBeep(1000, 'sine', 0.1); // Start beep
-    speak("System engaged. Target locked.");
+    speak("Hệ thống đã kích hoạt. Bắt đầu tấn công.");
 
     try {
         const response = await fetch('/api/start', {
@@ -138,7 +151,7 @@ async function stopSpam() {
     isRunning = false;
 
     playBeep(400, 'square', 0.2); // Stop sound
-    speak("Terminating process.");
+    speak("Đang dừng tiến trình.");
 
     // Toggle Buttons
     document.getElementById('btnStart').disabled = false;
@@ -165,7 +178,7 @@ async function activateGhostMode() {
     btnGhost.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> MASKING IDENTITY...';
 
     playBeep(1200, 'sine', 0.5); // Ghost sound
-    speak("Initiating Ghost Protocol. Identity reset.");
+    speak("Kích hoạt chế độ ẩn danh. Đang xóa dấu vết.");
 
     try {
         const response = await fetch('/api/reset_identity', { method: 'POST' });

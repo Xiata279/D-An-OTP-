@@ -490,6 +490,35 @@ input[type=range] {
     color: var(--text-secondary);
 }
 
+/* Shortcuts Guide */
+.shortcuts-guide {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--glass-border);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.key-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.key {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: bold;
+    color: var(--accent-1);
+    font-size: 0.7rem;
+}
+
 /* Stats Column (Right) */
 .stats-column {
     grid-column: 3;
