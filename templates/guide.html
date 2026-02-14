@@ -1,192 +1,181 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Manual - LuânEm Tool</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Hướng Dẫn Sử Dụng - LuânEm Tool</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        .guide-container {
-            max-width: 1000px;
-            margin: 50px auto;
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 30px;
-            padding: 20px;
+        .guide-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 95%;
+            padding: 40px 0;
         }
 
-        .sidebar {
-            background: rgba(10, 10, 12, 0.8);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 12px;
-            height: fit-content;
-            position: sticky;
-            top: 50px;
+        .guide-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
-        .sidebar h3 {
-            color: var(--neon-cyan);
-            font-family: 'Orbitron', sans-serif;
-            margin-top: 0;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--neon-cyan);
+        .guide-header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 20px;
         }
 
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .sidebar li {
+        .guide-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            background: linear-gradient(to right, #fff, var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
         }
 
-        .sidebar a {
-            color: #aaa;
-            text-decoration: none;
-            display: block;
-            padding: 10px;
-            border-radius: 6px;
-            transition: all 0.3s;
+        .guide-content {
+            display: grid;
+            gap: 30px;
         }
 
-        .sidebar a:hover,
-        .sidebar a.active {
-            background: rgba(0, 255, 255, 0.1);
-            color: var(--neon-cyan);
-            padding-left: 15px;
-        }
-
-        .content {
-            background: rgba(10, 10, 12, 0.9);
-            padding: 40px;
-            border-radius: 16px;
-            border: 1px solid var(--glass-border);
-        }
-
-        .section {
-            margin-bottom: 50px;
-            scroll-margin-top: 100px;
-        }
-
-        .section h2 {
-            color: var(--neon-pink);
-            font-family: 'Orbitron', sans-serif;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        .feature-box {
-            background: rgba(255, 255, 255, 0.03);
-            border-left: 4px solid var(--neon-cyan);
+        .step-item {
+            display: flex;
+            gap: 20px;
             padding: 20px;
-            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            transition: 0.3s;
         }
 
-        code {
-            background: #000;
-            color: #0f0;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
+        .step-item:hover {
+            border-color: var(--neon-blue);
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 242, 254, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--neon-blue);
+            flex-shrink: 0;
+        }
+
+        .step-info h3 {
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .step-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .btn-back-wrapper {
+            margin-top: 30px;
+            text-align: center;
         }
 
         .btn-back {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: var(--neon-cyan);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
             text-decoration: none;
-            font-family: 'Orbitron', sans-serif;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: 0.3s;
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-back:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
     </style>
 </head>
 
 <body>
-    <div class="scanlines"></div>
+    <!-- Background System -->
+    <div class="mesh-background"></div>
+    <div class="aurora"></div>
+    <div class="grid-overlay"></div>
 
-    <div class="guide-container">
-        <aside class="sidebar">
-            <a href="/" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Về Dashboard</a>
-            <h3>MỤC LỤC</h3>
-            <ul>
-                <li><a href="#intro" class="active">1. Giới Thiệu</a></li>
-                <li><a href="#carrier">2. Carrier Lookup</a></li>
-                <li><a href="#threads">3. Multi-Threading</a></li>
-                <li><a href="#proxy">4. Proxy Manager</a></li>
-                <li><a href="#troubleshoot">5. Xử Lý Lỗi</a></li>
-            </ul>
-        </aside>
+    <div class="guide-wrapper">
+        <div class="guide-card">
+            <div class="guide-header">
+                <h1>HƯỚNG DẪN SỬ DỤNG</h1>
+                <p style="color: var(--text-secondary);">LuânEm Tool v4.0 - Tối Thượng & Đơn Giản</p>
+            </div>
 
-        <main class="content">
-            <section id="intro" class="section">
-                <h2>1. Giới Thiệu</h2>
-                <p>Chào mừng đến với <strong>LuânEm Tool v3.0</strong> (Cyberpunk Edition). Đây là công cụ Spam OTP tối
-                    thượng, hỗ trợ đa luồng, ẩn danh và giao diện Holographic cực ngầu.</p>
-            </section>
-
-            <section id="carrier" class="section">
-                <h2>2. Carrier Lookup (Soi Nhà Mạng)</h2>
-                <div class="feature-box">
-                    <p>Tính năng này tự động phát hiện nhà mạng khi bạn nhập số điện thoại.</p>
+            <div class="guide-content">
+                <!-- Step 1 -->
+                <div class="step-item">
+                    <div class="step-icon"><i class="fa-solid fa-crosshairs"></i></div>
+                    <div class="step-info">
+                        <h3>1. Nhập Số Điện Thoại</h3>
+                        <p>Điền số điện thoại cần spam vào ô "Mục Tiêu". Công cụ sẽ tự động nhận diện nhà mạng (Viettel,
+                            Mobi, Vina...).</p>
+                    </div>
                 </div>
-                <ul>
-                    <li>Nhập <strong>098, 097, 096...</strong> -> Huy hiệu <span style="color: lime;">VIETTEL</span>
-                    </li>
-                    <li>Nhập <strong>091, 094...</strong> -> Huy hiệu <span style="color: cyan;">VINAPHONE</span></li>
-                    <li>Nhập <strong>090, 093...</strong> -> Huy hiệu <span style="color: red;">MOBIFONE</span></li>
-                </ul>
-            </section>
 
-            <section id="threads" class="section">
-                <h2>3. Multi-Threading (Đa Luồng)</h2>
-                <p>Tăng tốc độ gửi tin nhắn bằng cách chạy song song nhiều luồng.</p>
-                <p><strong>Khuyến nghị:</strong></p>
-                <ul>
-                    <li><strong>1-5 Threads:</strong> Mạng thường, không cần Proxy.</li>
-                    <li><strong>5-10 Threads:</strong> Máy khỏe, mạng mạnh.</li>
-                    <li><strong>10-20 Threads:</strong> BẮT BUỘC dùng Proxy để tránh bị chặn IP.</li>
-                </ul>
-            </section>
+                <!-- Step 2 -->
+                <div class="step-item">
+                    <div class="step-icon"><i class="fa-solid fa-gauge-high"></i></div>
+                    <div class="step-info">
+                        <h3>2. Cấu Hình Tấn Công</h3>
+                        <p><strong>Tốc độ:</strong> Kéo thanh trượt để chỉnh thời gian nghỉ (1s - 5s).<br>
+                            <strong>Số luồng:</strong> Chọn 1-5 luồng cho mạng thường. Nếu dùng Proxy, có thể tăng lên
+                            10-20 luồng.
+                        </p>
+                    </div>
+                </div>
 
-            <section id="proxy" class="section">
-                <h2>4. Proxy Manager (Quản Lý IP)</h2>
-                <p>Để đảm bảo an toàn và nặc danh, hãy sử dụng tính năng Proxy Manager.</p>
-                <ol>
-                    <li>Bấm vào nút <strong>"Cấu Hình Proxy"</strong> ở Dashboard.</li>
-                    <li>Dán danh sách Proxy (IP:Port) vào ô nhập liệu.</li>
-                    <li>Bấm <strong>Lưu</strong>. Hệ thống sẽ tự động dùng Proxy cho các lần gửi sau.</li>
-                </ol>
-            </section>
+                <!-- Step 3 -->
+                <div class="step-item">
+                    <div class="step-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div class="step-info">
+                        <h3>3. Sử Dụng Proxy (Khuyên Dùng)</h3>
+                        <p>Vào mục <strong>"Cấu Hình Proxy"</strong>, dán danh sách IP của bạn vào để tránh bị nhà mạng
+                            chặn và tăng tỉ lệ thành công.</p>
+                    </div>
+                </div>
 
-            <section id="troubleshoot" class="section">
-                <h2>5. Xử Lý Lỗi Thường Gặp</h2>
-                <p><strong>Lỗi: "NoneType object has no attribute..."</strong></p>
-                <p>-> Do Proxy chết hoặc mạng lag. Hãy thử tắt Proxy hoặc thay Proxy mới.</p>
+                <!-- Step 4 -->
+                <div class="step-item">
+                    <div class="step-icon"><i class="fa-solid fa-ghost"></i></div>
+                    <div class="step-info">
+                        <h3>4. Chế Độ Ẩn Danh (Ghost Mode)</h3>
+                        <p>Bấm nút <strong>"Chế Độ Ẩn Danh"</strong> để đổi User-Agent và xóa dấu vết trình duyệt ngay
+                            lập tức.</p>
+                    </div>
+                </div>
+            </div>
 
-                <p><strong>Lỗi: "404 Not Found"</strong></p>
-                <p>-> Thử F5 lại trang web. Nếu vẫn bị, hãy báo lại cho Admin.</p>
-            </section>
-        </main>
+            <div class="btn-back-wrapper">
+                <a href="/" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Quay Về Dashboard</a>
+            </div>
+        </div>
     </div>
-
-    <script>
-        // Simple script to highlight active section
-        const links = document.querySelectorAll('.sidebar a');
-        links.forEach(link => {
-            link.addEventListener('click', function () {
-                links.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-    </script>
 </body>
 
 </html>
