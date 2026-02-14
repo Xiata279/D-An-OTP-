@@ -23,7 +23,7 @@ function speak(text) {
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.pitch = 1.0;
-        utterance.rate = 1.0; // Normal speed for better clarity
+        utterance.rate = 0.9; // Slightly slower for clearer Vietnamese tones
 
         // Wait for voices to load (Chrome issue)
         let voices = speechSynthesis.getVoices();
@@ -34,15 +34,11 @@ function speak(text) {
             return;
         }
 
-        // Priority List for Standard Vietnamese
-        // 1. Google tiếng Việt (Chrome/Android)
-        // 2. Microsoft HoaiMy (Edge/Windows)
-        // 3. Any voice with 'Vietnamese' or 'Tiếng Việt' in name
-        // 4. Any voice with lang 'vi-VN'
-
+        // Priority List: Google -> Microsoft -> Nam Minh -> Linh -> Generic
         const viVoice = voices.find(v => v.name.includes('Google tiếng Việt')) ||
             voices.find(v => v.name.includes('HoaiMy')) ||
-            voices.find(v => v.name.includes('Vietnamese')) ||
+            voices.find(v => v.name.includes('Nam Minh')) ||
+            voices.find(v => v.name.includes('Linh')) ||
             voices.find(v => v.lang === 'vi-VN');
 
         if (viVoice) {
@@ -115,7 +111,7 @@ async function startSpam() {
     if (!phone || phone.length < 9) {
         appendLog('ERROR: INVALID TARGET NUMBER', 'error');
         playBeep(200, 'sawtooth', 0.3); // Error sound
-        speak("Lỗi. Số điện thoại không hợp lệ.");
+        speak("Báo lỗi. Số điện thoại, không hợp lệ.");
         return;
     }
 
@@ -125,7 +121,7 @@ async function startSpam() {
     isRunning = true;
 
     playBeep(1000, 'sine', 0.1); // Start beep
-    speak("Hệ thống đã kích hoạt. Bắt đầu tấn công.");
+    speak("Hệ thống, đã sẵn sàng. Bắt đầu tấn công.");
 
     try {
         const response = await fetch('/api/start', {
@@ -163,7 +159,7 @@ async function stopSpam() {
     isRunning = false;
 
     playBeep(400, 'square', 0.2); // Stop sound
-    speak("Đang dừng tiến trình.");
+    speak("Đang dừng, toàn bộ tiến trình.");
 
     // Toggle Buttons
     document.getElementById('btnStart').disabled = false;
@@ -190,7 +186,7 @@ async function activateGhostMode() {
     btnGhost.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> MASKING IDENTITY...';
 
     playBeep(1200, 'sine', 0.5); // Ghost sound
-    speak("Kích hoạt chế độ ẩn danh. Đang xóa dấu vết.");
+    speak("Chế độ ẩn danh, đã kích hoạt. Đang xóa dấu vết.");
 
     try {
         const response = await fetch('/api/reset_identity', { method: 'POST' });
@@ -251,7 +247,7 @@ async function pollStatus() {
             document.getElementById('btnStop').disabled = true;
             appendLog("SYNC: SERVER HALTED ATTACK", 'warning');
             stopRealPolling();
-            speak("Máy chủ đã ngắt kết nối.");
+            speak("Máy chủ, đã ngắt kết nối.");
         }
 
     } catch (error) {
