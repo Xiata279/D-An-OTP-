@@ -1,104 +1,109 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LuânEm Tool - Ultimate Spam</title>
+    <title>LuânEm Tool - Premium Edition</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
-    <div class="background-shapes">
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
-    </div>
+    <!-- Background Animation -->
+    <div class="background-grid"></div>
+    <div class="scanline"></div>
 
-    <div class="glass-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="logo">
-                <i class="fa-solid fa-bolt"></i>
-                <span>LuânEm</span>
+    <div class="cyber-container">
+        <!-- Header -->
+        <header class="cyber-header">
+            <div class="brand">
+                <i class="fa-solid fa-biohazard fa-spin-pulse"></i>
+                <h1 data-text="LUÂN EM TOOL">LUÂN EM TOOL</h1>
+                <span class="version">v3.0 PREMIUM</span>
             </div>
-            <nav class="nav-links">
-                <a href="#" class="active"><i class="fa-solid fa-house"></i> Dashboard</a>
-            </nav>
-            <div class="user-info" style="display: none;">
-                <!-- Hidden Admin Profile -->
+            <div class="status-panel">
+                <div class="status-item">
+                    <span class="label">SYSTEM</span>
+                    <span class="value online">ONLINE</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">PROXY</span>
+                    <span class="value" id="proxyStatus">ROTATING</span>
+                </div>
             </div>
-        </aside>
+        </header>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <header class="top-bar">
-                <h2>Dashboard</h2>
-                <div class="status-indicator">
-                    <span class="dot"></span> System Online
+        <!-- Main Interface -->
+        <main class="cyber-main">
+            <!-- Left Panel: Controls -->
+            <section class="panel control-panel">
+                <h2 class="panel-title"><i class="fa-solid fa-gamepad"></i> COMMAND CENTER</h2>
+
+                <div class="input-box">
+                    <label>TARGET PHONE (+84)</label>
+                    <input type="text" id="phoneInput" placeholder="ENTER NUMBER..." maxlength="10">
+                    <div class="input-border"></div>
                 </div>
-            </header>
 
-            <div class="dashboard-grid">
-                <!-- Control Card -->
-                <div class="card control-card">
-                    <h3><i class="fa-solid fa-rocket"></i> Control Center</h3>
-
-                    <div class="input-group">
-                        <label>Target Phone Number (+84)</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-phone"></i>
-                            <input type="text" id="phoneInput" placeholder="09xxxx (10 digits)" maxlength="10">
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Spam Speed (Delay: <span id="delayValue">2.0s</span>)</label>
-                        <input type="range" id="delaySlider" min="0" max="5" step="0.5" value="2">
-                        <div class="speed-labels">
-                            <span>Fast (Risk)</span>
-                            <span>Safe</span>
-                        </div>
-                    </div>
-
-                    <div class="buttons">
-                        <button id="btnStart" class="btn btn-primary" onclick="startSpam()">
-                            Start Attack
-                        </button>
-                        <button id="btnStop" class="btn btn-danger" onclick="stopSpam()" disabled>
-                            Stop
-                        </button>
+                <div class="slider-box">
+                    <label>ATTACK SPEED: <span id="delayValue" class="highlight">2.0s</span></label>
+                    <input type="range" id="delaySlider" min="0" max="5" step="0.5" value="2">
+                    <div class="range-labels">
+                        <span>GOD MODE</span>
+                        <span>SAFE</span>
                     </div>
                 </div>
 
-                <!-- Stats Card -->
-                <div class="card stats-card">
-                    <h3><i class="fa-solid fa-chart-pie"></i> Live Statistics</h3>
-                    <div class="stat-item">
-                        <span class="stat-label">Requests Sent</span>
-                        <span class="stat-value" id="statsSent">0</span>
+                <div class="action-buttons">
+                    <button id="btnStart" class="cyber-btn start" onclick="startSpam()">
+                        <span class="btn-text">INITIATE ATTACK</span>
+                        <span class="glitch-effect"></span>
+                    </button>
+                    <button id="btnStop" class="cyber-btn stop" onclick="stopSpam()" disabled>
+                        <span class="btn-text">TERMINATE</span>
+                    </button>
+                </div>
+
+                <div class="ghost-mode-box">
+                    <button id="btnGhost" class="cyber-btn ghost" onclick="activateGhostMode()">
+                        <i class="fa-solid fa-user-secret"></i> ACTIVATE GHOST MODE
+                    </button>
+                    <p class="ghost-desc">Reset Identity & Rotate IP</p>
+                </div>
+            </section>
+
+            <!-- Right Panel: Data -->
+            <section class="panel data-panel">
+                <!-- Stats Row -->
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <span class="stat-title">SENT</span>
+                        <span class="stat-number" id="statsSent">0</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Success Rate</span>
-                        <span class="stat-value" id="statsSuccess">100%</span>
+                    <div class="stat-box">
+                        <span class="stat-title">SUCCESS</span>
+                        <span class="stat-number success" id="statsSuccess">0</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Active Threads</span>
-                        <span class="stat-value" id="statsThreads">0</span>
+                    <div class="stat-box">
+                        <span class="stat-title">FAIL</span>
+                        <span class="stat-number fail" id="statsFail">0</span>
                     </div>
                 </div>
 
-                <!-- Log Card -->
-                <div class="card log-card">
-                    <h3><i class="fa-solid fa-terminal"></i> Live Logs</h3>
+                <!-- Live Log -->
+                <div class="log-container">
+                    <h2 class="panel-title small"><i class="fa-solid fa-terminal"></i> LIVE TERMINAL</h2>
                     <div class="log-window" id="logConsole">
-                        <div class="log-line system">[SYSTEM] Welcome to LuânEm Tool v3.0</div>
-                        <div class="log-line system">[SYSTEM] Waiting for command...</div>
+                        <div class="log-line system">[SYSTEM] Core systems initialized...</div>
+                        <div class="log-line system">[SYSTEM] Connecting to satellite... Connected.</div>
+                        <div class="log-line system">[SYSTEM] Waiting for target coordinates...</div>
                     </div>
                 </div>
-            </div>
+            </section>
         </main>
     </div>
 

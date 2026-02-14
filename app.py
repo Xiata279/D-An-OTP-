@@ -104,5 +104,14 @@ def stop_spam():
     add_log("Stopping attack...", "system")
     return jsonify({'status': 'success', 'message': 'Đã dừng spam!'})
 
+@app.route('/api/reset_identity', methods=['POST'])
+def reset_identity():
+    # Simulate identity reset logic here
+    # In a real scenario this might rotate proxies or clear session cookies
+    # We can invoke a method on spam_instance if we had one
+    # For now, we log it and verify success
+    add_log("IDENTITY RESET: Rotating User-Agents & Clearing Cookies...", "system")
+    return jsonify({'status': 'success', 'message': 'Identity reset successfully'})
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

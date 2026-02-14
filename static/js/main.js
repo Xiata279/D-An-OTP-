@@ -1,82 +1,109 @@
 let isRunning = false;
 let logInterval = null;
 
-// Slider logic
+// Update slider value
 const delaySlider = document.getElementById('delaySlider');
 const delayValue = document.getElementById('delayValue');
 
-delaySlider.addEventListener('input', function () {
-    delayValue.textContent = this.value + 's';
+delaySlider.addEventListener('input', (e) => {
+    delayValue.textContent = `${parseFloat(e.target.value).toFixed(1)}s`;
 });
 
+// Helper: Append log
 function appendLog(message, type = 'system') {
     const consoleBody = document.getElementById('logConsole');
     const div = document.createElement('div');
     div.className = `log-line ${type}`;
-    // Add timestamp similar to VS Code output?
-    const time = new Date().toLocaleTimeString();
-    div.textContent = `[${time}] ${message}`;
+    div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
     consoleBody.appendChild(div);
     consoleBody.scrollTop = consoleBody.scrollHeight;
 }
 
+// Start Spam
 async function startSpam() {
     const phone = document.getElementById('phoneInput').value;
     const delay = document.getElementById('delaySlider').value;
 
-    if (phone.length < 10) {
-        appendLog("Error: Invalid phone number format.", "error");
+    if (!phone || phone.length < 9) {
+        appendLog('ERROR: INVALID TARGET NUMBER', 'error');
         return;
     }
 
-    if (isRunning) return;
+    // Toggle Buttons
+    document.getElementById('btnStart').disabled = true;
+    document.getElementById('btnStop').disabled = false;
+    isRunning = true;
 
     try {
-        appendLog(`Debugger attached. Launching Process ID: ${Math.floor(Math.random() * 10000)}...`, 'info');
-
         const response = await fetch('/api/start', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone: phone, delay: delay })
+            body: JSON.stringify({ phone, delay })
         });
         const data = await response.json();
 
         if (data.status === 'success') {
-            isRunning = true;
-            document.getElementById('btnStart').disabled = true;
-            document.getElementById('btnStop').disabled = false;
-
-            appendLog(`Target: ${phone} | Delay: ${delay}s`, 'success');
-            appendLog('Thread pool initialized. Starting requests...', 'system');
+            appendLog(`TARGET LOCKED: ${phone}`, 'success');
+            appendLog(`INJECTION DELAY: ${delay}s`, 'info');
 
             // Start polling real logs
             startRealPolling();
         } else {
-            appendLog(`Error: ${data.message}`, 'error');
+            appendLog(`INIT ERROR: ${data.message}`, 'error');
+            document.getElementById('btnStart').disabled = false;
+            document.getElementById('btnStop').disabled = true;
         }
     } catch (error) {
         console.error('Error:', error);
-        appendLog('Fatal Error: Connection refused.', 'error');
+        appendLog('CONNECTION FAILED', 'error');
+        document.getElementById('btnStart').disabled = false;
+        document.getElementById('btnStop').disabled = true;
     }
 }
 
+// Stop Spam
 async function stopSpam() {
-    if (!isRunning) return;
+    isRunning = false;
+
+    // Toggle Buttons
+    document.getElementById('btnStart').disabled = false;
+    document.getElementById('btnStop').disabled = true;
 
     try {
-        const response = await fetch('/api/stop', { method: 'POST' });
+        await fetch('/api/stop', { method: 'POST' });
+        appendLog('ATTACK TERMINATED BY USER', 'warning');
+        stopRealPolling();
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// Ghost Mode
+async function activateGhostMode() {
+    const btnGhost = document.getElementById('btnGhost');
+    const originalText = btnGhost.innerHTML;
+
+    btnGhost.disabled = true;
+    btnGhost.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> MASKING IDENTITY...';
+
+    try {
+        const response = await fetch('/api/reset_identity', { method: 'POST' });
         const data = await response.json();
 
         if (data.status === 'success') {
-            isRunning = false;
-            document.getElementById('btnStart').disabled = false;
-            document.getElementById('btnStop').disabled = true;
-
-            appendLog('Process terminated by user.', 'warning');
-            stopRealPolling();
+            appendLog('IDENTITY RESET: NEW SESSION & UA GENERATED', 'success');
+            document.getElementById('proxyStatus').textContent = 'ROTATED';
+            setTimeout(() => document.getElementById('proxyStatus').textContent = 'SECURE', 2000);
+        } else {
+            appendLog('IDENTITY RESET FAILED', 'error');
         }
     } catch (error) {
-        console.error('Error:', error);
+        appendLog('GHOST MODE ERROR', 'error');
+    } finally {
+        setTimeout(() => {
+            btnGhost.disabled = false;
+            btnGhost.innerHTML = originalText;
+        }, 1500);
     }
 }
 
@@ -91,17 +118,14 @@ async function pollStatus() {
         // Update stats
         if (data.stats) {
             document.getElementById('statsSent').textContent = data.stats.sent;
-            document.getElementById('statsSuccess').textContent = data.stats.success; // You might want a rate calculation here
-            document.getElementById('statsThreads').textContent = data.stats.threads;
+            document.getElementById('statsSuccess').textContent = data.stats.success;
+            document.getElementById('statsFail').textContent = data.stats.fail;
         }
 
         // Update logs
         if (data.logs && data.logs.length > 0) {
             const consoleBody = document.getElementById('logConsole');
-            consoleBody.innerHTML = ''; // Clear current logs (or append smartly)
-            // Ideally we should append only new ones, but for simplicity let's just render the list
-            // actually clearing every time might be flickering. 
-            // Let's just append the last few if we can track them, or just dump them all since list is capped at 50.
+            consoleBody.innerHTML = '';
 
             data.logs.forEach(log => {
                 const div = document.createElement('div');
@@ -113,12 +137,11 @@ async function pollStatus() {
         }
 
         if (!data.running && isRunning) {
-            // Server stopped but client thinks running?
-            // Sync state
             isRunning = false;
             document.getElementById('btnStart').disabled = false;
             document.getElementById('btnStop').disabled = true;
-            appendLog("Sync: Process stopped on server.", "warning");
+            appendLog("SYNC: SERVER HALTED ATTACK", 'warning');
+            stopRealPolling();
         }
 
     } catch (error) {
@@ -127,9 +150,8 @@ async function pollStatus() {
 }
 
 function startRealPolling() {
-    // Clear logs to start fresh
     document.getElementById('logConsole').innerHTML = '';
-    logInterval = setInterval(pollStatus, 1000); // Poll every 1s
+    logInterval = setInterval(pollStatus, 1000);
 }
 
 function stopRealPolling() {
