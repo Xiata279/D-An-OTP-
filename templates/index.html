@@ -42,30 +42,22 @@
             </div>
         </header>
 
-        <!-- Stats Section (3 small blocks) -->
-        <div class="bento-item stat stat-sent">
-            <div class="icon"><i class="fa-solid fa-paper-plane"></i></div>
-            <div class="info">
-                <span class="label">SENT</span>
-                <span class="value" id="statsSent">0</span>
+        <!-- Logs Section (Left) -->
+        <div class="bento-item logs">
+            <div class="log-header">
+                <h2><i class="fa-solid fa-code"></i> TERMINAL</h2>
+                <div class="window-controls">
+                    <span></span><span></span><span></span>
+                </div>
             </div>
-        </div>
-        <div class="bento-item stat stat-success">
-            <div class="icon"><i class="fa-solid fa-check-circle"></i></div>
-            <div class="info">
-                <span class="label">SUCCESS</span>
-                <span class="value" id="statsSuccess">0</span>
-            </div>
-        </div>
-        <div class="bento-item stat stat-fail">
-            <div class="icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-            <div class="info">
-                <span class="label">FAIL</span>
-                <span class="value" id="statsFail">0</span>
+            <div class="log-content" id="logConsole">
+                <div class="log-line system">Initializing LuânEm OS v4.0...</div>
+                <div class="log-line system">Loading core modules... OK</div>
+                <div class="log-line system">Ready for target input.</div>
             </div>
         </div>
 
-        <!-- Controls Section -->
+        <!-- Controls Section (Center) -->
         <div class="bento-item controls">
             <h2><i class="fa-solid fa-sliders"></i> CONFIGURATION</h2>
 
@@ -101,18 +93,28 @@
             </button>
         </div>
 
-        <!-- Logs Section -->
-        <div class="bento-item logs">
-            <div class="log-header">
-                <h2><i class="fa-solid fa-code"></i> TERMINAL OUTPUT</h2>
-                <div class="window-controls">
-                    <span></span><span></span><span></span>
+        <!-- Stats Section (Right - Vertical) -->
+        <div class="stats-column">
+            <div class="bento-item stat stat-sent">
+                <div class="icon"><i class="fa-solid fa-paper-plane"></i></div>
+                <div class="info">
+                    <span class="label">SENT</span>
+                    <span class="value" id="statsSent">0</span>
                 </div>
             </div>
-            <div class="log-content" id="logConsole">
-                <div class="log-line system">Initializing LuânEm OS v4.0...</div>
-                <div class="log-line system">Loading core modules... OK</div>
-                <div class="log-line system">Ready for target input.</div>
+            <div class="bento-item stat stat-success">
+                <div class="icon"><i class="fa-solid fa-check-circle"></i></div>
+                <div class="info">
+                    <span class="label">SUCCESS</span>
+                    <span class="value" id="statsSuccess">0</span>
+                </div>
+            </div>
+            <div class="bento-item stat stat-fail">
+                <div class="icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="info">
+                    <span class="label">FAIL</span>
+                    <span class="value" id="statsFail">0</span>
+                </div>
             </div>
         </div>
     </div>
