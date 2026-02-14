@@ -17,55 +17,62 @@ function playBeep(freq = 600, type = 'sine', duration = 0.1) {
 
 // AI Voice
 let selectedVoice = null;
+const GOOGLE_VI_VOICE_NAME = "Google Online (Nữ/Chuẩn)";
 
 function populateVoiceList() {
-    if (typeof speechSynthesis === 'undefined') return;
-
     const voiceSelect = document.getElementById('voiceSelect');
-    let voices = speechSynthesis.getVoices();
-
-    // Retry if empty (Chrome)
-    if (voices.length === 0) {
-        speechSynthesis.onvoiceschanged = populateVoiceList;
-        return;
-    }
-
     voiceSelect.innerHTML = '';
 
-    // Filter for meaningful voices (Vietnamese or English)
-    const relevantVoices = voices.filter(v => v.lang.includes('vi') || v.lang.includes('en'));
+    // 1. ADD GOOGLE ONLINE OPTION (Priority #1)
+    const googleOption = document.createElement('option');
+    googleOption.textContent = `🌐 ${GOOGLE_VI_VOICE_NAME}`;
+    googleOption.value = 'google_online';
+    googleOption.selected = true; // Auto-select this as it's the best
+    voiceSelect.appendChild(googleOption);
 
-    relevantVoices.forEach((voice) => {
-        const option = document.createElement('option');
-        option.textContent = `${voice.name} (${voice.lang})`;
-        option.value = voice.name;
+    // Set default
+    selectedVoice = 'google_online';
 
-        // Auto-select priority female voices
-        if (voice.name.includes('Google tiếng Việt') ||
-            voice.name.includes('HoaiMy') ||
-            voice.name.includes('Linh') ||
-            (voice.lang === 'vi-VN' && voice.name.includes('Female'))) {
-            option.selected = true;
-            selectedVoice = voice;
-        }
+    // 2. Add Local Voices
+    if (typeof speechSynthesis !== 'undefined') {
+        let voices = speechSynthesis.getVoices();
 
-        voiceSelect.appendChild(option);
-    });
-
-    // If no female voice found, select the first Vietnamese choice
-    if (!selectedVoice) {
-        const firstVi = relevantVoices.find(v => v.lang.includes('vi'));
-        if (firstVi) {
-            selectedVoice = firstVi;
-            voiceSelect.value = firstVi.name;
+        // Retry logic for Chrome
+        if (voices.length === 0) {
+            speechSynthesis.onvoiceschanged = () => {
+                // Don't wipe the Google option, just append locals
+                const freshVoices = speechSynthesis.getVoices();
+                addLocalVoices(freshVoices, voiceSelect);
+            };
+        } else {
+            addLocalVoices(voices, voiceSelect);
         }
     }
 }
 
+function addLocalVoices(voices, selectElement) {
+    // Filter for meaningful voices AND remove duplicates
+    const relevantVoices = voices.filter(v => v.lang.includes('vi') || v.lang.includes('en'));
+
+    relevantVoices.forEach((voice) => {
+        // Skip if it looks like a duplicate
+        if (selectElement.querySelector(`option[value="${voice.name}"]`)) return;
+
+        const option = document.createElement('option');
+        option.textContent = `💻 ${voice.name} (${voice.lang})`;
+        option.value = voice.name;
+        selectElement.appendChild(option);
+    });
+}
+
 // Event Listener for Voice Change
 document.getElementById('voiceSelect').addEventListener('change', (e) => {
-    const voices = speechSynthesis.getVoices();
-    selectedVoice = voices.find(v => v.name === e.target.value);
+    if (e.target.value === 'google_online') {
+        selectedVoice = 'google_online';
+    } else {
+        const voices = speechSynthesis.getVoices();
+        selectedVoice = voices.find(v => v.name === e.target.value);
+    }
     speak("Đã chọn giọng nói này.");
 });
 
@@ -73,6 +80,27 @@ document.getElementById('voiceSelect').addEventListener('change', (e) => {
 populateVoiceList();
 
 function speak(text) {
+    // Clean text for URL (remove special chars if needed, but encodeURIComponent handles it)
+
+    // CASE 1: Google Online Voice
+    if (selectedVoice === 'google_online') {
+        try {
+            const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=vi&q=${encodeURIComponent(text)}`;
+            const audio = new Audio(url);
+            audio.play().catch(e => console.error("Audio Play Error:", e));
+        } catch (e) {
+            console.error("Google TTS Error:", e);
+            // Fallback to local
+            speakLocal(text);
+        }
+        return;
+    }
+
+    // CASE 2: Local Voice
+    speakLocal(text);
+}
+
+function speakLocal(text) {
     if ('speechSynthesis' in window) {
         speechSynthesis.cancel();
 
@@ -80,7 +108,7 @@ function speak(text) {
         utterance.pitch = 1.0;
         utterance.rate = 0.9;
 
-        if (selectedVoice) {
+        if (selectedVoice && typeof selectedVoice !== 'string') {
             utterance.voice = selectedVoice;
         }
 
