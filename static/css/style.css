@@ -268,6 +268,81 @@ body {
     color: #fccb90;
 }
 
+/* Visualizer */
+.visualizer-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 30px;
+    margin: 15px 0;
+    gap: 2px;
+}
+
+.vis-bar {
+    width: 6px;
+    background: var(--accent-1);
+    height: 4px;
+    border-radius: 2px;
+    transition: height 0.1s ease;
+    opacity: 0.5;
+}
+
+.vis-bar.active {
+    opacity: 1;
+    box-shadow: 0 0 10px var(--accent-1);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 900px) {
+    .bento-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 1fr auto;
+        height: auto;
+        overflow-y: auto;
+        padding-bottom: 20px;
+    }
+
+    .header {
+        grid-column: 1;
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .controls {
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    .logs {
+        grid-column: 1;
+        grid-row: 4;
+        height: 300px;
+    }
+
+    .stats-column {
+        grid-column: 1;
+        grid-row: 2;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .stat {
+        height: 80px;
+        padding: 10px;
+    }
+
+    .stat .icon {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .stat .value {
+        font-size: 1.2rem;
+    }
+}
+
 /* Control Panel (Center) */
 .controls {
     grid-column: 2;

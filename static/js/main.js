@@ -1,12 +1,73 @@
 let isRunning = false;
 let logInterval = null;
 
+// Sound Effects
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playBeep(freq = 600, type = 'sine', duration = 0.1) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+    osc.stop(audioCtx.currentTime + duration);
+}
+
+// AI Voice
+function speak(text) {
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.pitch = 0.8;
+        utterance.rate = 1.1;
+        // Try to find a female voice
+        const voices = speechSynthesis.getVoices();
+        const femaleVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Google US English'));
+        if (femaleVoice) utterance.voice = femaleVoice;
+        speechSynthesis.speak(utterance);
+    }
+}
+
+// Visualizer Loop
+function startVisualizer() {
+    const bars = document.querySelectorAll('.vis-bar');
+    setInterval(() => {
+        if (isRunning) {
+            bars.forEach(bar => {
+                const height = Math.random() * 25 + 5;
+                if (Math.random() > 0.5) bar.classList.add('active');
+                else bar.classList.remove('active');
+                bar.style.height = `${height}px`;
+            });
+        }
+    }, 100);
+}
+startVisualizer();
+
+// Global Hotkeys
+document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT') return; // Ignore if typing
+
+    switch (e.key.toLowerCase()) {
+        case ' ':
+            e.preventDefault();
+            if (isRunning) stopSpam();
+            else startSpam();
+            break;
+        case 'g':
+            activateGhostMode();
+            break;
+    }
+});
+
 // Update slider value
 const delaySlider = document.getElementById('delaySlider');
 const delayValue = document.getElementById('delayValue');
 
 delaySlider.addEventListener('input', (e) => {
     delayValue.textContent = `${parseFloat(e.target.value).toFixed(1)}s`;
+    playBeep(800, 'triangle', 0.05); // Tick sound
 });
 
 // Helper: Append log
@@ -21,11 +82,15 @@ function appendLog(message, type = 'system') {
 
 // Start Spam
 async function startSpam() {
+    if (isRunning) return;
+
     const phone = document.getElementById('phoneInput').value;
     const delay = document.getElementById('delaySlider').value;
 
     if (!phone || phone.length < 9) {
         appendLog('ERROR: INVALID TARGET NUMBER', 'error');
+        playBeep(200, 'sawtooth', 0.3); // Error sound
+        speak("Error. Invalid target.");
         return;
     }
 
@@ -33,6 +98,9 @@ async function startSpam() {
     document.getElementById('btnStart').disabled = true;
     document.getElementById('btnStop').disabled = false;
     isRunning = true;
+
+    playBeep(1000, 'sine', 0.1); // Start beep
+    speak("System engaged. Target locked.");
 
     try {
         const response = await fetch('/api/start', {
@@ -52,18 +120,25 @@ async function startSpam() {
             appendLog(`INIT ERROR: ${data.message}`, 'error');
             document.getElementById('btnStart').disabled = false;
             document.getElementById('btnStop').disabled = true;
+            isRunning = false;
         }
     } catch (error) {
         console.error('Error:', error);
         appendLog('CONNECTION FAILED', 'error');
         document.getElementById('btnStart').disabled = false;
         document.getElementById('btnStop').disabled = true;
+        isRunning = false;
     }
 }
 
 // Stop Spam
 async function stopSpam() {
+    if (!isRunning) return;
+
     isRunning = false;
+
+    playBeep(400, 'square', 0.2); // Stop sound
+    speak("Terminating process.");
 
     // Toggle Buttons
     document.getElementById('btnStart').disabled = false;
@@ -81,10 +156,16 @@ async function stopSpam() {
 // Ghost Mode
 async function activateGhostMode() {
     const btnGhost = document.getElementById('btnGhost');
+
+    if (btnGhost.disabled) return;
+
     const originalText = btnGhost.innerHTML;
 
     btnGhost.disabled = true;
     btnGhost.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> MASKING IDENTITY...';
+
+    playBeep(1200, 'sine', 0.5); // Ghost sound
+    speak("Initiating Ghost Protocol. Identity reset.");
 
     try {
         const response = await fetch('/api/reset_identity', { method: 'POST' });
@@ -102,6 +183,7 @@ async function activateGhostMode() {
     } finally {
         setTimeout(() => {
             btnGhost.disabled = false;
+            btnGhost.innerHTML = originalText;
         }, 1500);
     }
 }
@@ -131,6 +213,9 @@ async function pollStatus() {
                 div.className = `log-line ${log.type}`;
                 div.textContent = log.text;
                 consoleBody.appendChild(div);
+
+                // Beep on success/fail
+                if (log.type === 'error') playBeep(200, 'sawtooth', 0.1);
             });
             consoleBody.scrollTop = consoleBody.scrollHeight;
         }
@@ -141,6 +226,7 @@ async function pollStatus() {
             document.getElementById('btnStop').disabled = true;
             appendLog("SYNC: SERVER HALTED ATTACK", 'warning');
             stopRealPolling();
+            speak("Server interrupted.");
         }
 
     } catch (error) {
