@@ -38,53 +38,53 @@
             </div>
             <div class="status-indicator active">
                 <span class="dot"></span>
-                <span>SYSTEM ONLINE</span>
+                <span>HỆ THỐNG SẴN SÀNG</span>
             </div>
         </header>
 
         <!-- Logs Section (Left) -->
         <div class="bento-item logs">
             <div class="log-header">
-                <h2><i class="fa-solid fa-code"></i> TERMINAL</h2>
+                <h2><i class="fa-solid fa-code"></i> BẢNG ĐIỀU KHIỂN</h2>
                 <div class="window-controls">
                     <span></span><span></span><span></span>
                 </div>
             </div>
             <div class="log-content" id="logConsole">
-                <div class="log-line system">Initializing LuânEm OS v4.0...</div>
-                <div class="log-line system">Loading core modules... OK</div>
-                <div class="log-line system">Ready for target input.</div>
+                <div class="log-line system">Khởi động LuânEm OS v4.0...</div>
+                <div class="log-line system">Đang tải tài nguyên... OK</div>
+                <div class="log-line system">Sẵn sàng nhập mục tiêu.</div>
             </div>
         </div>
 
         <!-- Controls Section (Center) -->
         <div class="bento-item controls">
-            <h2><i class="fa-solid fa-sliders"></i> CONFIGURATION</h2>
+            <h2><i class="fa-solid fa-sliders"></i> CẤU HÌNH TẤN CÔNG</h2>
 
             <div class="input-group">
-                <label>TARGET</label>
+                <label>MỤC TIÊU</label>
                 <div class="holo-input">
                     <i class="fa-solid fa-hashtag"></i>
-                    <input type="text" id="phoneInput" placeholder="09xxxx (10 digits)" maxlength="10"
+                    <input type="text" id="phoneInput" placeholder="09xxxx (10 số)" maxlength="10"
                         oninput="detectCarrier(this.value)">
                     <span id="carrierBadge" class="carrier-badge">NET</span>
                 </div>
             </div>
 
             <div class="input-group">
-                <label>INTENSITY: <span id="delayValue">2.0s</span></label>
+                <label>TỐC ĐỘ (GIÂY): <span id="delayValue">2.0s</span></label>
                 <input type="range" id="delaySlider" min="0" max="5" step="0.5" value="2">
                 <div class="range-bg"></div>
             </div>
 
             <div class="input-group">
-                <label>THREADS: <span id="threadValue">1</span></label>
+                <label>SỐ LUỒNG: <span id="threadValue">1</span></label>
                 <input type="range" id="threadSlider" min="1" max="20" step="1" value="1">
                 <div class="range-bg"></div>
             </div>
 
             <div class="input-group">
-                <label>ADVANCED SETTINGS</label>
+                <label>CÀI ĐẶT NÂNG CAO</label>
                 <div style="display: flex; gap: 15px; margin-top: 10px;">
                     <a href="/proxies" class="btn-sub"
                         style="flex: 1; text-align: center; text-decoration: none; padding: 15px; background: rgba(0, 255, 255, 0.1); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); border-radius: 8px; transition: all 0.3s;">
@@ -101,10 +101,10 @@
 
             <div class="action-grid">
                 <button id="btnStart" class="holo-btn start" onclick="startSpam()">
-                    <i class="fa-solid fa-play"></i> START
+                    <i class="fa-solid fa-play"></i> BẮT ĐẦU
                 </button>
                 <button id="btnStop" class="holo-btn stop" onclick="stopSpam()" disabled>
-                    <i class="fa-solid fa-stop"></i> STOP
+                    <i class="fa-solid fa-stop"></i> DỪNG LẠI
                 </button>
             </div>
 
@@ -125,15 +125,15 @@
             <button id="btnGhost" class="holo-btn ghost" onclick="activateGhostMode()">
                 <div class="ghost-icon"><i class="fa-solid fa-mask"></i></div>
                 <div class="ghost-text">
-                    <span>GHOST MODE</span>
-                    <small id="proxyStatus">Identity: Exposed</small>
+                    <span>CHẾ ĐỘ ẨN DANH</span>
+                    <small id="proxyStatus">Trạng thái: Bị lộ</small>
                 </div>
             </button>
 
             <!-- Shortcuts Guide -->
             <div class="shortcuts-guide">
-                <div class="key-item"><span class="key">SPACE</span> Start/Stop</div>
-                <div class="key-item"><span class="key">G</span> Ghost Mode</div>
+                <div class="key-item"><span class="key">SPACE</span> Bắt đầu/Dừng</div>
+                <div class="key-item"><span class="key">G</span> Ẩn danh</div>
             </div>
         </div>
 
@@ -142,21 +142,21 @@
             <div class="bento-item stat stat-sent">
                 <div class="icon"><i class="fa-solid fa-paper-plane"></i></div>
                 <div class="info">
-                    <span class="label">SENT</span>
+                    <span class="label">ĐÃ GỬI</span>
                     <span class="value" id="statsSent">0</span>
                 </div>
             </div>
             <div class="bento-item stat stat-success">
                 <div class="icon"><i class="fa-solid fa-check-circle"></i></div>
                 <div class="info">
-                    <span class="label">SUCCESS</span>
+                    <span class="label">THÀNH CÔNG</span>
                     <span class="value" id="statsSuccess">0</span>
                 </div>
             </div>
             <div class="bento-item stat stat-fail">
                 <div class="icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
                 <div class="info">
-                    <span class="label">FAIL</span>
+                    <span class="label">THẤT BẠI</span>
                     <span class="value" id="statsFail">0</span>
                 </div>
             </div>

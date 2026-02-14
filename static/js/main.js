@@ -108,7 +108,7 @@ async function startSpam() {
     const proxies = localStorage.getItem('spam_proxies') || '';
 
     if (!phone || phone.length < 9) {
-        appendLog('ERROR: INVALID TARGET NUMBER', 'error');
+        appendLog('LỖI: SỐ ĐIỆN THOẠI KHÔNG HỢP LỆ', 'error');
         playBeep(200, 'sawtooth', 0.3); // Error sound
         speak("Báo lỗi. Số điện thoại, không hợp lệ.");
         return;
@@ -131,21 +131,21 @@ async function startSpam() {
         const data = await response.json();
 
         if (data.status === 'success') {
-            appendLog(`TARGET LOCKED: ${phone}`, 'success');
-            appendLog(`CONFIG: ${threads} THREADS | ${delay}s DELAY`, 'info');
-            if (proxies.trim()) appendLog(`PROXY: ENABLED (${proxies.split('\n').length} IPs)`, 'info');
+            appendLog(`ĐÃ KHÓA MỤC TIÊU: ${phone}`, 'success');
+            appendLog(`CẤU HÌNH: ${threads} LUỒNG | ĐỘ TRỄ ${delay}s`, 'info');
+            if (proxies.trim()) appendLog(`PROXY: ĐÃ BẬT (${proxies.split('\n').length} IPs)`, 'info');
 
             // Start polling real logs
             startRealPolling();
         } else {
-            appendLog(`INIT ERROR: ${data.message}`, 'error');
+            appendLog(`LỖI KHỞI TẠO: ${data.message}`, 'error');
             document.getElementById('btnStart').disabled = false;
             document.getElementById('btnStop').disabled = true;
             isRunning = false;
         }
     } catch (error) {
         console.error('Error:', error);
-        appendLog('CONNECTION FAILED', 'error');
+        appendLog('KẾT NỐI THẤT BẠI', 'error');
         document.getElementById('btnStart').disabled = false;
         document.getElementById('btnStop').disabled = true;
         isRunning = false;
@@ -167,7 +167,7 @@ async function stopSpam() {
 
     try {
         await fetch('/api/stop', { method: 'POST' });
-        appendLog('ATTACK TERMINATED BY USER', 'warning');
+        appendLog('ĐÃ DỪNG TẤN CÔNG', 'warning');
         stopRealPolling();
     } catch (error) {
         console.error('Error:', error);
@@ -183,7 +183,7 @@ async function activateGhostMode() {
     const originalText = btnGhost.innerHTML;
 
     btnGhost.disabled = true;
-    btnGhost.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> MASKING IDENTITY...';
+    btnGhost.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ĐANG ẨN DANH...';
 
     playBeep(1200, 'sine', 0.5); // Ghost sound
     speak("Chế độ ẩn danh, đã kích hoạt. Đang xóa dấu vết.");
@@ -193,14 +193,14 @@ async function activateGhostMode() {
         const data = await response.json();
 
         if (data.status === 'success') {
-            appendLog('IDENTITY RESET: NEW SESSION & UA GENERATED', 'success');
-            document.getElementById('proxyStatus').textContent = 'Identity: Secure';
-            setTimeout(() => document.getElementById('proxyStatus').textContent = 'Identity: Exposed', 2000);
+            appendLog('ĐÃ ĐỔI NHẬN DẠNG: USER-AGENT MỚI', 'success');
+            document.getElementById('proxyStatus').textContent = 'Trạng thái: An toàn';
+            setTimeout(() => document.getElementById('proxyStatus').textContent = 'Trạng thái: Bị lộ', 2000);
         } else {
-            appendLog('IDENTITY RESET FAILED', 'error');
+            appendLog('ĐỔI NHẬN DẠNG THẤT BẠI', 'error');
         }
     } catch (error) {
-        appendLog('GHOST MODE ERROR', 'error');
+        appendLog('LỖI CHẾ ĐỘ ẨN DANH', 'error');
     } finally {
         setTimeout(() => {
             btnGhost.disabled = false;
@@ -245,7 +245,7 @@ async function pollStatus() {
             isRunning = false;
             document.getElementById('btnStart').disabled = false;
             document.getElementById('btnStop').disabled = true;
-            appendLog("SYNC: SERVER HALTED ATTACK", 'warning');
+            appendLog("ĐỒNG BỘ: MÁY CHỦ ĐÃ DỪNG", 'warning');
             stopRealPolling();
             speak("Máy chủ, đã ngắt kết nối.");
         }
