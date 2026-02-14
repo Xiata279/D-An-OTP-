@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify, Response
 import threading
 import time
 import spam_otp  # Import module spam_otp.py
+import proxy_scraper # Pre-import to avoid runtime errors
 from datetime import datetime
 
 app = Flask(__name__)
@@ -100,7 +101,6 @@ def start_spam():
     # Proxy Handling
     proxies = []
     if auto_proxy:
-        import proxy_scraper
         scraper = proxy_scraper.ProxyScraper()
         proxies = scraper.get_proxies()
         add_log(f"Auto-Scraped {len(proxies)} proxies from internet.", "system")
@@ -145,8 +145,8 @@ def reset_identity():
 
 # --- TELEGRAM BOT INTEGRATION ---
 TELEGRAM_BOT = None
-TELEGRAM_TOKEN = "" 
-TELEGRAM_CHAT_ID = ""
+TELEGRAM_TOKEN = "8406827765:AAF_HUzbk01ZLaLsJOwwlsDwxzRMY5GblAE" 
+TELEGRAM_CHAT_ID = "" # User needs to find this via /start
 
 def start_telegram_bot_thread():
     global TELEGRAM_BOT

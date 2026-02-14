@@ -12,7 +12,8 @@ class Spambot:
 
         @self.bot.message_handler(commands=['start', 'help'])
         def send_welcome(message):
-            self.bot.reply_to(message, "🤖 **LUÂN EM C2 BOT**\n\nCommand List:\n/attack [sđt] - Tấn công ngay\n/stop - Dừng lại\n/status - Xem trạng thái")
+            chat_id = message.chat.id
+            self.bot.reply_to(message, f"🤖 **LUÂN EM C2 BOT**\n\n🆔 **CHAT ID CỦA BẠN:** `{chat_id}`\n(Hãy copy ID này nhập vào Tool để nhận thông báo)\n\n📜 **Lệnh:**\n/attack [sđt] - Tấn công ngay\n/stop - Dừng lại\n/status - Xem trạng thái")
 
         @self.bot.message_handler(commands=['attack'])
         def handle_attack(message):
