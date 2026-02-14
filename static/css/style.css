@@ -110,6 +110,8 @@ body {
     max-width: 1400px;
     margin: 40px auto;
     align-items: start;
+    justify-content: center;
+    /* Center the grid items horizontally */
 }
 
 /* Mobile Responsive */
