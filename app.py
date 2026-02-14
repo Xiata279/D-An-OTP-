@@ -210,4 +210,5 @@ def telegram_config():
 
 if __name__ == '__main__':
     # Try to load saved config if we had file persistence, but for now just wait for UI
+    start_telegram_bot_thread() # Auto-start bot if token is present
     app.run(debug=True, port=5000)
