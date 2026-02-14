@@ -275,4 +275,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Restore delay value
     const savedDelay = localStorage.getItem('spam_delay');
+    if (savedDelay) {
+        document.getElementById('delaySlider').value = savedDelay;
+        document.getElementById('delayValue').textContent = `${parseFloat(savedDelay).toFixed(1)}s`;
+    }
 });
+
+// Telegram Modal Functions
+function openTelegramModal() {
+    document.getElementById('telegramModal').style.display = "block";
+    // Load saved settings
+    const token = localStorage.getItem('tele_token') || '';
+    const chatId = localStorage.getItem('tele_chat_id') || '';
+    document.getElementById('teleToken').value = token;
+    document.getElementById('teleChatId').value = chatId;
+}
+
+function closeTelegramModal() {
+    document.getElementById('telegramModal').style.display = "none";
+}
+
+// Close modal if clicked outside
+window.onclick = function (event) {
+    const modal = document.getElementById('telegramModal');
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+async function saveTelegramConfig() {
+    const token = document.getElementById('teleToken').value;
+    const chatId = document.getElementById('teleChatId').value;
+
+    if (!token) {
+        alert("Vui lòng nhập Token Bot!");
+        return;
+    }
+
+    // Save to local storage
+    localStorage.setItem('tele_token', token);
+    localStorage.setItem('tele_chat_id', chatId);
+
+    try {
+        const response = await fetch('/api/telegram_config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: token, chat_id: chatId })
+        });
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            appendLog('TELEGRAM: ĐÃ LƯU CẤU HÌNH', 'success');
+            closeTelegramModal();
+        } else {
+            appendLog('LỖI LƯU CẤU HÌNH TELEGRAM', 'error');
+        }
+    } catch (error) {
+        console.error(error);
+        appendLog('LỖI KẾT NỐI MÁY CHỦ', 'error');
+    }
+}

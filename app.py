@@ -143,5 +143,71 @@ def reset_identity():
     add_log("IDENTITY RESET: Rotating User-Agents & Clearing Cookies...", "system")
     return jsonify({'status': 'success', 'message': 'Identity reset successfully'})
 
+# --- TELEGRAM BOT INTEGRATION ---
+TELEGRAM_BOT = None
+TELEGRAM_TOKEN = "" 
+TELEGRAM_CHAT_ID = ""
+
+def start_telegram_bot_thread():
+    global TELEGRAM_BOT
+    if not TELEGRAM_TOKEN:
+        return
+
+    import telegram_bot
+    
+    # Callbacks for the bot to control the app
+    def bot_start_attack(phone, delay, threads, proxies, mode):
+        # We need to simulate the start_spam logic but internal
+        global SPAM_RUNNING, SPAM_THREADS, STATS
+        if SPAM_RUNNING:
+             return {"status": "error", "message": "System is already running!"}
+        
+        STATS = {"sent": 0, "success": 0, "fail": 0, "threads": threads, "running": True}
+        SPAM_RUNNING = True
+        SPAM_THREADS = []
+        for i in range(threads):
+            t = threading.Thread(target=spam_loop_task, args=(phone, delay, proxies, mode))
+            t.daemon = True
+            t.start()
+            SPAM_THREADS.append(t)
+        add_log(f"[Telegram] Started attack on {phone}", "system")
+        return {"status": "success", "message": f"Attack started on {phone}"}
+
+    def bot_stop_attack():
+        global SPAM_RUNNING
+        if not SPAM_RUNNING:
+             return {"status": "error", "message": "Not running"}
+        SPAM_RUNNING = False
+        STATS["threads"] = 0
+        add_log("[Telegram] Stopped attack", "system")
+        return {"status": "success", "message": "Attack stopped"}
+
+    def bot_get_status():
+        s = STATS.copy()
+        s['running'] = SPAM_RUNNING
+        return s
+
+    try:
+        TELEGRAM_BOT = telegram_bot.Spambot(TELEGRAM_TOKEN, bot_start_attack, bot_stop_attack, bot_get_status)
+        t = threading.Thread(target=TELEGRAM_BOT.start)
+        t.daemon = True
+        t.start()
+        add_log("Telegram Bot connected!", "system")
+    except Exception as e:
+        add_log(f"Telegram Bot Error: {e}", "error")
+
+@app.route('/api/telegram_config', methods=['POST'])
+def telegram_config():
+    global TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
+    data = request.json
+    TELEGRAM_TOKEN = data.get('token')
+    TELEGRAM_CHAT_ID = data.get('chat_id')
+    
+    # Restart bot with new token
+    start_telegram_bot_thread()
+    
+    return jsonify({'status': 'success', 'message': 'Telegram Settings Saved!'})
+
 if __name__ == '__main__':
+    # Try to load saved config if we had file persistence, but for now just wait for UI
     app.run(debug=True, port=5000)

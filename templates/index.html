@@ -109,6 +109,9 @@
                 <button id="btnGhost" class="btn-icon ghost" onclick="activateGhostMode()" title="Chế độ Ẩn Danh">
                     <i class="fa-solid fa-ghost"></i> Ẩn Danh
                 </button>
+                <button class="btn-icon" onclick="openTelegramModal()" title="Cài đặt Telegram">
+                    <i class="fa-brands fa-telegram"></i> Tele
+                </button>
             </div>
 
             <!-- Visualizer -->
@@ -174,6 +177,29 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- Telegram Settings Modal -->
+    <div id="telegramModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeTelegramModal()">&times;</span>
+            <h2><i class="fa-brands fa-telegram"></i> CẤU HÌNH TELEGRAM</h2>
+            <div class="input-group">
+                <label>BOT TOKEN</label>
+                <div class="holo-input">
+                    <input type="text" id="teleToken" placeholder="Nhập Token của Bot...">
+                </div>
+            </div>
+            <div class="input-group" style="margin-top: 15px;">
+                <label>CHAT ID</label>
+                <div class="holo-input">
+                    <input type="text" id="teleChatId" placeholder="Nhập Chat ID của bạn...">
+                </div>
+            </div>
+            <button class="holo-btn start" style="width: 100%; margin-top: 20px;" onclick="saveTelegramConfig()">
+                LƯU CẤU HÌNH
+            </button>
+        </div>
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}?v=god_mode_v4.1"></script>
