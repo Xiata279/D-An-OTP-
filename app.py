@@ -67,9 +67,18 @@ def get_status():
         "logs": LOG_MESSAGES
     })
 
+@app.route('/proxies')
+def proxy_manager():
+    return render_template('proxy_manager.html')
+
+@app.route('/guide')
+def guide():
+    return render_template('guide.html')
+
+# Deprecated old guide route, redirect or remove
 @app.route('/proxy-guide')
-def proxy_guide():
-    return render_template('proxy_guide.html')
+def proxy_guide_old():
+    return render_template('guide.html') # Redirect old link to new guide
 
 @app.route('/api/start', methods=['POST'])
 def start_spam():

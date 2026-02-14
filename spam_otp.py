@@ -20,8 +20,10 @@ USER_AGENTS = [
 ]
 
 # Fix encoding
+# Fix encoding for Windows
 if sys.platform.startswith('win'):
-    sys.stdout.reconfigure(encoding='utf-8')
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8')
 
 class SpamOTP:
     def __init__(self, phone, proxies=None):

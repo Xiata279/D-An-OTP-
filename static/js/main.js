@@ -103,7 +103,9 @@ async function startSpam() {
     const phone = document.getElementById('phoneInput').value;
     const delay = document.getElementById('delaySlider').value;
     const threads = document.getElementById('threadSlider').value;
-    const proxies = document.getElementById('proxyInput').value;
+
+    // Retrieve proxies from LocalStorage for persistence across pages
+    const proxies = localStorage.getItem('spam_proxies') || '';
 
     if (!phone || phone.length < 9) {
         appendLog('ERROR: INVALID TARGET NUMBER', 'error');
@@ -261,3 +263,14 @@ function startRealPolling() {
 function stopRealPolling() {
     if (logInterval) clearInterval(logInterval);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Check local storage for proxies count
+    const savedProxies = localStorage.getItem('spam_proxies') || '';
+    const count = savedProxies.split('\n').filter(l => l.trim() !== '').length;
+    const statusBadge = document.getElementById('proxyStatus');
+    if (statusBadge) statusBadge.innerText = count;
+
+    // Restore delay value
+    const savedDelay = localStorage.getItem('spam_delay');
+});
