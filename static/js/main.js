@@ -16,39 +16,72 @@ function playBeep(freq = 600, type = 'sine', duration = 0.1) {
 }
 
 // AI Voice
+let selectedVoice = null;
+
+function populateVoiceList() {
+    if (typeof speechSynthesis === 'undefined') return;
+
+    const voiceSelect = document.getElementById('voiceSelect');
+    let voices = speechSynthesis.getVoices();
+
+    // Retry if empty (Chrome)
+    if (voices.length === 0) {
+        speechSynthesis.onvoiceschanged = populateVoiceList;
+        return;
+    }
+
+    voiceSelect.innerHTML = '';
+
+    // Filter for meaningful voices (Vietnamese or English)
+    const relevantVoices = voices.filter(v => v.lang.includes('vi') || v.lang.includes('en'));
+
+    relevantVoices.forEach((voice) => {
+        const option = document.createElement('option');
+        option.textContent = `${voice.name} (${voice.lang})`;
+        option.value = voice.name;
+
+        // Auto-select priority female voices
+        if (voice.name.includes('Google tiếng Việt') ||
+            voice.name.includes('HoaiMy') ||
+            voice.name.includes('Linh') ||
+            (voice.lang === 'vi-VN' && voice.name.includes('Female'))) {
+            option.selected = true;
+            selectedVoice = voice;
+        }
+
+        voiceSelect.appendChild(option);
+    });
+
+    // If no female voice found, select the first Vietnamese choice
+    if (!selectedVoice) {
+        const firstVi = relevantVoices.find(v => v.lang.includes('vi'));
+        if (firstVi) {
+            selectedVoice = firstVi;
+            voiceSelect.value = firstVi.name;
+        }
+    }
+}
+
+// Event Listener for Voice Change
+document.getElementById('voiceSelect').addEventListener('change', (e) => {
+    const voices = speechSynthesis.getVoices();
+    selectedVoice = voices.find(v => v.name === e.target.value);
+    speak("Đã chọn giọng nói này.");
+});
+
+// Initialize Voices
+populateVoiceList();
+
 function speak(text) {
     if ('speechSynthesis' in window) {
-        // Cancel current speech to avoid queue buildup
         speechSynthesis.cancel();
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.pitch = 1.0;
-        utterance.rate = 0.9; // Slightly slower for clearer Vietnamese tones
+        utterance.rate = 0.9;
 
-        // Wait for voices to load (Chrome issue)
-        let voices = speechSynthesis.getVoices();
-
-        // Retry getting voices if empty
-        if (voices.length === 0) {
-            speechSynthesis.onvoiceschanged = () => speak(text);
-            return;
-        }
-
-        // Priority List: Female Vietnamese Voices
-        // 1. Google tiếng Việt (Female by default)
-        // 2. Microsoft HoaiMy (Female)
-        // 3. Apple Linh (Female)
-        // 4. Any Vietnamese voice marked as "Female"
-
-        const viVoice = voices.find(v => v.name.includes('Google tiếng Việt')) ||
-            voices.find(v => v.name.includes('HoaiMy')) ||
-            voices.find(v => v.name.includes('Linh')) ||
-            voices.find(v => v.lang === 'vi-VN' && v.name.includes('Female')) ||
-            voices.find(v => v.lang === 'vi-VN'); // Fallback
-
-        if (viVoice) {
-            utterance.voice = viVoice;
-            utterance.lang = 'vi-VN';
+        if (selectedVoice) {
+            utterance.voice = selectedVoice;
         }
 
         speechSynthesis.speak(utterance);
