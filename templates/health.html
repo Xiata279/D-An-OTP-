@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Health Monitor - LuânEm v5.0</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .health-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .health-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .health-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+        }
+
+        .health-header h1 i {
+            color: var(--neon-green);
+            margin-right: 10px;
+        }
+
+        .btn-test-all {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-test-all:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 255, 157, 0.4);
+        }
+
+        .btn-test-all:disabled {
+            opacity: 0.5;
+            cursor: wait;
+        }
+
+        .health-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .summary-card .num {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .summary-card .label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .summary-card.alive .num {
+            color: var(--neon-green);
+        }
+
+        .summary-card.slow .num {
+            color: var(--warning);
+        }
+
+        .summary-card.dead .num {
+            color: var(--danger);
+        }
+
+        .summary-card.total .num {
+            color: var(--neon-blue);
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .service-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .service-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .service-card .name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .service-card .meta {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 3px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-badge.alive {
+            background: rgba(0, 255, 157, 0.15);
+            color: var(--neon-green);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+        }
+
+        .status-badge.slow {
+            background: rgba(255, 165, 2, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(255, 165, 2, 0.3);
+        }
+
+        .status-badge.dead {
+            background: rgba(255, 71, 87, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        .status-badge.pending {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid var(--glass-border);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            color: #fff;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin: 15px 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar.active {
+            display: block;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+            border-radius: 2px;
+            transition: width 0.3s;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                opacity: 0.7;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.7;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mesh-background"></div>
+    <div class="aurora"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="health-container">
+        <a href="/" class="back-link"><i class="fa-solid fa-arrow-left"></i> Quay lại Dashboard</a>
+
+        <div class="health-header">
+            <h1><i class="fa-solid fa-heart-pulse"></i> SERVICE HEALTH MONITOR</h1>
+            <button class="btn-test-all" onclick="testAll()" id="btnTestAll">
+                <i class="fa-solid fa-stethoscope"></i> KIỂM TRA TẤT CẢ
+            </button>
+        </div>
+
+        <div class="progress-bar" id="progressBar">
+            <div class="fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div class="health-summary">
+            <div class="summary-card total">
+                <div class="num" id="totalCount">0</div>
+                <div class="label">TỔNG SERVICE</div>
+            </div>
+            <div class="summary-card alive">
+                <div class="num" id="aliveCount">0</div>
+                <div class="label">🟢 HOẠT ĐỘNG</div>
+            </div>
+            <div class="summary-card slow">
+                <div class="num" id="slowCount">0</div>
+                <div class="label">🟡 CHẬM/BLOCKED</div>
+            </div>
+            <div class="summary-card dead">
+                <div class="num" id="deadCount">0</div>
+                <div class="label">🔴 CHẾT</div>
+            </div>
+        </div>
+
+        <div class="service-grid" id="serviceGrid">
+            <div class="service-card">
+                <div>
+                    <div class="name">Nhấn "KIỂM TRA TẤT CẢ" để bắt đầu</div>
+                    <div class="meta">Hệ thống sẽ test từng service...</div>
+                </div>
+                <span class="status-badge pending">CHƯA TEST</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testAll() {
+            const btn = document.getElementById('btnTestAll');
+            const grid = document.getElementById('serviceGrid');
+            const progress = document.getElementById('progressBar');
+            const fill = document.getElementById('progressFill');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ĐANG KIỂM TRA...';
+            progress.classList.add('active');
+            fill.style.width = '30%';
+
+            grid.innerHTML = '<div class="service-card"><div><div class="name">⏳ Đang test tất cả services...</div><div class="meta">Có thể mất 10-15 giây</div></div></div>';
+
+            try {
+                fill.style.width = '60%';
+                const response = await fetch('/api/health/test', { method: 'POST' });
+                const data = await response.json();
+                fill.style.width = '100%';
+
+                // Count
+                let alive = 0, slow = 0, dead = 0, total = 0;
+                grid.innerHTML = '';
+
+                // Sort: alive first, then slow, then dead
+                const sorted = Object.entries(data).sort((a, b) => {
+                    const order = { alive: 0, slow: 1, dead: 2 };
+                    return (order[a[1].status] || 3) - (order[b[1].status] || 3);
+                });
+
+                for (const [name, info] of sorted) {
+                    total++;
+                    if (info.status === 'alive') alive++;
+                    else if (info.status === 'slow') slow++;
+                    else dead++;
+
+                    const card = document.createElement('div');
+                    card.className = 'service-card';
+                    const timeText = info.time_ms ? `${info.time_ms}ms` : 'N/A';
+                    const codeText = info.code ? `HTTP ${info.code}` : 'Connection Error';
+                    card.innerHTML = `
+                    <div>
+                        <div class="name">${name}</div>
+                        <div class="meta">${codeText} | ${timeText}</div>
+                    </div>
+                    <span class="status-badge ${info.status}">${info.status === 'alive' ? '🟢 SỐNG' : info.status === 'slow' ? '🟡 CHẬM' : '🔴 CHẾT'}</span>
+                `;
+                    grid.appendChild(card);
+                }
+
+                document.getElementById('totalCount').textContent = total;
+                document.getElementById('aliveCount').textContent = alive;
+                document.getElementById('slowCount').textContent = slow;
+                document.getElementById('deadCount').textContent = dead;
+
+            } catch (error) {
+                grid.innerHTML = `<div class="service-card"><div><div class="name">❌ Lỗi kết nối server</div><div class="meta">${error}</div></div></div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-stethoscope"></i> KIỂM TRA LẠI';
+                setTimeout(() => {
+                    progress.classList.remove('active');
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+
+</html>

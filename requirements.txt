@@ -1,3 +1,5 @@
 requests
 flask
 pyTelegramBotAPI
+aiohttp
+aiohttp-socks

