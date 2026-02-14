@@ -65,98 +65,118 @@
                         <input type="range" id="threadSlider" min="1" max="20" step="1" value="1">
                     </div>
                 </div>
+            </div>
 
-                <!-- Action Buttons -->
-                <div class="action-grid">
-                    <button id="btnStart" class="holo-btn start" onclick="startSpam()">
-                        <i class="fa-solid fa-bolt"></i> BẮT ĐẦU
-                    </button>
-                    <button id="btnStop" class="holo-btn stop" onclick="stopSpam()" disabled>
-                        <i class="fa-solid fa-power-off"></i> DỪNG
-                    </button>
+            <!-- Tactical Controls (Phase 4) -->
+            <div class="control-row">
+                <div class="input-group">
+                    <label>CHIẾN THUẬT</label>
+                    <select id="attackMode" class="holo-select">
+                        <option value="carpet">Rải Thảm (Mặc định)</option>
+                        <option value="sniper">Bắn Tỉa (Siêu Tốc)</option>
+                        <option value="wave">Sóng Thần (Biến Thiên)</option>
+                    </select>
                 </div>
-
-                <div class="divider"></div>
-
-                <!-- Advanced & Ghost -->
-                <div class="sub-controls">
-                    <a href="/proxies" class="btn-icon" title="Cấu hình Proxy">
-                        <i class="fa-solid fa-shield-cat"></i>Proxy <span id="proxyStatus" class="mini-badge">0</span>
-                    </a>
-                    <a href="/guide" class="btn-icon" title="Hướng dẫn">
-                        <i class="fa-solid fa-book-open"></i>HDSD
-                    </a>
-                    <button id="btnGhost" class="btn-icon ghost" onclick="activateGhostMode()" title="Chế độ Ẩn Danh">
-                        <i class="fa-solid fa-ghost"></i> Ẩn Danh
-                    </button>
-                </div>
-
-                <!-- Visualizer -->
-                <div class="visualizer-box">
-                    <div class="vis-bar"></div>
-                    <div class="vis-bar"></div>
-                    <div class="vis-bar"></div>
-                    <div class="vis-bar"></div>
-                    <div class="vis-bar"></div>
-                    <div class="vis-bar"></div>
-                    <div class="vis-bar"></div>
-                    <div class="vis-bar"></div>
-                    <div class="vis-bar"></div>
+                <div class="input-group checkbox-group">
+                    <label for="autoProxy" class="checkbox-label">
+                        <input type="checkbox" id="autoProxy">
+                        <span class="checkmark"></span>
+                        AUTO PROXY
+                    </label>
                 </div>
             </div>
 
-            <!-- Right Column: Monitor (Stats + Logs) -->
-            <div class="monitor-column">
-                <!-- Stats Row -->
-                <div class="stats-row">
-                    <div class="stat-card sent">
-                        <div class="stat-icon"><i class="fa-solid fa-paper-plane"></i></div>
-                        <div class="stat-data">
-                            <span class="stat-value" id="statsSent">0</span>
-                            <span class="stat-label">ĐÃ GỬI</span>
-                        </div>
-                    </div>
-                    <div class="stat-card success">
-                        <div class="stat-icon"><i class="fa-solid fa-check"></i></div>
-                        <div class="stat-data">
-                            <span class="stat-value" id="statsSuccess">0</span>
-                            <span class="stat-label">THÀNH CÔNG</span>
-                        </div>
-                    </div>
-                    <div class="stat-card fail">
-                        <div class="stat-icon"><i class="fa-solid fa-xmark"></i></div>
-                        <div class="stat-data">
-                            <span class="stat-value" id="statsFail">0</span>
-                            <span class="stat-label">THẤT BẠI</span>
-                        </div>
-                    </div>
-                    <div class="stat-card services">
-                        <div class="stat-icon"><i class="fa-solid fa-server"></i></div>
-                        <div class="stat-data">
-                            <span class="stat-value">40+</span>
-                            <span class="stat-label">DỊCH VỤ</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Logs Terminal -->
-                <div class="bento-item logs">
-                    <div class="log-header">
-                        <h2><i class="fa-solid fa-terminal"></i> NHẬT KÝ HỆ THỐNG</h2>
-                        <div class="window-controls">
-                            <span></span><span></span><span></span>
-                        </div>
-                    </div>
-                    <div class="log-content" id="logConsole">
-                        <div class="log-line system">>> Hệ thống LuânEm v4.0 đã khởi động.</div>
-                        <div class="log-line system">>> Đang chờ lệnh từ người dùng...</div>
-                    </div>
-                </div>
+            <!-- Action Buttons -->
+            <div class="action-grid">
+                <button id="btnStart" class="holo-btn start" onclick="startSpam()">
+                    <i class="fa-solid fa-bolt"></i> BẮT ĐẦU
+                </button>
+                <button id="btnStop" class="holo-btn stop" onclick="stopSpam()" disabled>
+                    <i class="fa-solid fa-power-off"></i> DỪNG
+                </button>
             </div>
 
+            <div class="divider"></div>
+
+            <!-- Advanced & Ghost -->
+            <div class="sub-controls">
+                <a href="/proxies" class="btn-icon" title="Cấu hình Proxy">
+                    <i class="fa-solid fa-shield-cat"></i>Proxy <span id="proxyStatus" class="mini-badge">0</span>
+                </a>
+                <a href="/guide" class="btn-icon" title="Hướng dẫn">
+                    <i class="fa-solid fa-book-open"></i>HDSD
+                </a>
+                <button id="btnGhost" class="btn-icon ghost" onclick="activateGhostMode()" title="Chế độ Ẩn Danh">
+                    <i class="fa-solid fa-ghost"></i> Ẩn Danh
+                </button>
+            </div>
+
+            <!-- Visualizer -->
+            <div class="visualizer-box">
+                <div class="vis-bar"></div>
+                <div class="vis-bar"></div>
+                <div class="vis-bar"></div>
+                <div class="vis-bar"></div>
+                <div class="vis-bar"></div>
+                <div class="vis-bar"></div>
+                <div class="vis-bar"></div>
+                <div class="vis-bar"></div>
+                <div class="vis-bar"></div>
+            </div>
         </div>
 
-        <script src="{{ url_for('static', filename='js/main.js') }}?v=god_mode_v4.1"></script>
+        <!-- Right Column: Monitor (Stats + Logs) -->
+        <div class="monitor-column">
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <div class="stat-card sent">
+                    <div class="stat-icon"><i class="fa-solid fa-paper-plane"></i></div>
+                    <div class="stat-data">
+                        <span class="stat-value" id="statsSent">0</span>
+                        <span class="stat-label">ĐÃ GỬI</span>
+                    </div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon"><i class="fa-solid fa-check"></i></div>
+                    <div class="stat-data">
+                        <span class="stat-value" id="statsSuccess">0</span>
+                        <span class="stat-label">THÀNH CÔNG</span>
+                    </div>
+                </div>
+                <div class="stat-card fail">
+                    <div class="stat-icon"><i class="fa-solid fa-xmark"></i></div>
+                    <div class="stat-data">
+                        <span class="stat-value" id="statsFail">0</span>
+                        <span class="stat-label">THẤT BẠI</span>
+                    </div>
+                </div>
+                <div class="stat-card services">
+                    <div class="stat-icon"><i class="fa-solid fa-server"></i></div>
+                    <div class="stat-data">
+                        <span class="stat-value">40+</span>
+                        <span class="stat-label">DỊCH VỤ</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Terminal -->
+            <div class="bento-item logs">
+                <div class="log-header">
+                    <h2><i class="fa-solid fa-terminal"></i> NHẬT KÝ HỆ THỐNG</h2>
+                    <div class="window-controls">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+                <div class="log-content" id="logConsole">
+                    <div class="log-line system">>> Hệ thống LuânEm v4.0 đã khởi động.</div>
+                    <div class="log-line system">>> Đang chờ lệnh từ người dùng...</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}?v=god_mode_v4.1"></script>
 </body>
 
 </html>

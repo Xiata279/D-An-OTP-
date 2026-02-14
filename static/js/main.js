@@ -103,6 +103,8 @@ async function startSpam() {
     const phone = document.getElementById('phoneInput').value;
     const delay = document.getElementById('delaySlider').value;
     const threads = document.getElementById('threadSlider').value;
+    const mode = document.getElementById('attackMode').value;
+    const auto_proxy = document.getElementById('autoProxy').checked;
 
     // Retrieve proxies from LocalStorage for persistence across pages
     const proxies = localStorage.getItem('spam_proxies') || '';
@@ -126,7 +128,7 @@ async function startSpam() {
         const response = await fetch('/api/start', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone, delay, threads, proxies })
+            body: JSON.stringify({ phone, delay, threads, proxies, mode, auto_proxy })
         });
         const data = await response.json();
 
