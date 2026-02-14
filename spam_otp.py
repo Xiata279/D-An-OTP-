@@ -65,7 +65,12 @@ class SpamOTP:
         if 'timeout' not in kwargs:
             kwargs['timeout'] = REQUEST_TIMEOUT
             
-        # Execute Request
+        # Execute Request (SSL Verify Disabled)
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        
+        kwargs['verify'] = False # Disable SSL check for all requests
+
         if method.lower() == 'get':
             return requests.get(url, **kwargs)
         elif method.lower() == 'post':
