@@ -92,8 +92,8 @@ async function activateGhostMode() {
 
         if (data.status === 'success') {
             appendLog('IDENTITY RESET: NEW SESSION & UA GENERATED', 'success');
-            document.getElementById('proxyStatus').textContent = 'ROTATED';
-            setTimeout(() => document.getElementById('proxyStatus').textContent = 'SECURE', 2000);
+            document.getElementById('proxyStatus').textContent = 'Identity: Secure';
+            setTimeout(() => document.getElementById('proxyStatus').textContent = 'Identity: Exposed', 2000);
         } else {
             appendLog('IDENTITY RESET FAILED', 'error');
         }
@@ -102,7 +102,6 @@ async function activateGhostMode() {
     } finally {
         setTimeout(() => {
             btnGhost.disabled = false;
-            btnGhost.innerHTML = originalText;
         }, 1500);
     }
 }
