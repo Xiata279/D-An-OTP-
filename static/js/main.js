@@ -23,19 +23,31 @@ function speak(text) {
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.pitch = 1.0;
-        utterance.rate = 1.0;
+        utterance.rate = 1.0; // Normal speed for better clarity
 
-        // Try to find a Vietnamese voice
-        const voices = speechSynthesis.getVoices();
-        // Priority: Vietnamese -> Google US (Fallback) -> First available
-        const viVoice = voices.find(v => v.lang.includes('vi'));
-        const enVoice = voices.find(v => v.name.includes('Google US English'));
+        // Wait for voices to load (Chrome issue)
+        let voices = speechSynthesis.getVoices();
+
+        // Retry getting voices if empty
+        if (voices.length === 0) {
+            speechSynthesis.onvoiceschanged = () => speak(text);
+            return;
+        }
+
+        // Priority List for Standard Vietnamese
+        // 1. Google tiếng Việt (Chrome/Android)
+        // 2. Microsoft HoaiMy (Edge/Windows)
+        // 3. Any voice with 'Vietnamese' or 'Tiếng Việt' in name
+        // 4. Any voice with lang 'vi-VN'
+
+        const viVoice = voices.find(v => v.name.includes('Google tiếng Việt')) ||
+            voices.find(v => v.name.includes('HoaiMy')) ||
+            voices.find(v => v.name.includes('Vietnamese')) ||
+            voices.find(v => v.lang === 'vi-VN');
 
         if (viVoice) {
             utterance.voice = viVoice;
             utterance.lang = 'vi-VN';
-        } else if (enVoice) {
-            utterance.voice = enVoice;
         }
 
         speechSynthesis.speak(utterance);
